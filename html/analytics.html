@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics SAMELCO II</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/municipalities-data.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+</head>
+<body class="page-analytics">
+  <div class="bg-image" aria-hidden="true"></div>
+  <div class="noise"></div>
+  <div class="orb orb-1"></div>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="dashboard.html" class="nav-logo">
+        <span class="nav-logo-icon" aria-hidden="true">
+          <img src="../assets/images/logo.png" alt="SAMELCO II logo" class="nav-logo-img">
+        </span>
+        <span class="nav-logo-text">
+          <span class="nav-logo-title">SAMELCO II</span>
+          <span class="nav-logo-sub">SAMAR ELECTRIC COOPERATIVE, INC.</span>
+        </span>
+      </a>
+      <div class="nav-right">
+        <div class="nav-links">
+          <a href="dashboard.html" class="nav-link">Home</a>
+          <a href="records.html" class="nav-link">Records</a>
+          <a href="analytics.html" class="nav-link" aria-current="page">Analytics</a>
+          <a href="teams.html" class="nav-link">Teams</a>
+          <a href="contact.html" class="nav-link">Contact</a>
+          <a href="about.html" class="nav-link">About</a>
+        </div>
+        <span class="nav-user-welcome">Welcome, <span id="user-name">User</span></span>
+        <button type="button" class="nav-btn nav-btn-cta" id="logout-btn">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <section class="analytics-section">
+    <div class="analytics-container">
+            
+      </div>
+
+      <div class="analytics-banner">
+        <div class="analytics-banner-text">
+          <span class="analytics-banner-label">Operational Snapshot</span>
+          <span class="analytics-banner-sub" id="analytics-range-label">Showing latest data</span>
+        </div>
+        <div class="analytics-banner-actions">
+          <a class="nav-btn nav-btn-report" href="records.html">Open Records</a>
+          <button type="button" class="nav-btn nav-btn-cta" id="analytics-export-btn">Export CSV</button>
+        </div>
+      </div>
+
+      <div class="records-table-wrap analytics-controls">
+        <div class="records-table-header-controls">
+          <div class="records-table-title-group">
+            <h2 class="records-table-title">Explore Reports</h2>
+            <div class="records-table-badge" id="analytics-live-badge">Live sync enabled</div>
+          </div>
+          <div class="records-table-actions">
+            <div class="search-box">
+              <span class="search-icon">🔎</span>
+              <input type="text" id="analytics-search" class="records-filter-input" placeholder="Search municipality, barangay, issue...">
+            </div>
+            <div class="select-wrapper">
+              <select id="analytics-range" class="records-status-filter" title="Time range">
+                <option value="30d" selected>Last 30 days</option>
+                <option value="7d">Last 7 days</option>
+                <option value="90d">Last 90 days</option>
+                <option value="all">All time</option>
+              </select>
+            </div>
+            <div class="select-wrapper">
+              <select id="analytics-muni-filter" class="records-status-filter" title="Filter by municipality">
+                <option value="all" selected>All Municipalities</option>
+              </select>
+            </div>
+            <div class="select-wrapper">
+              <select id="analytics-barangay-filter" class="records-status-filter" title="Filter by barangay">
+                <option value="all" selected>All Barangays</option>
+              </select>
+            </div>
+            <div class="select-wrapper">
+              <select id="analytics-status-filter" class="records-status-filter" title="Filter by status">
+                <option value="all" selected>All Status</option>
+                <option value="active">Active</option>
+                <option value="resolved">Resolved</option>
+              </select>
+            </div>
+            <div class="records-action-buttons">
+              <button type="button" id="analytics-clear-filters" class="records-export-btn" title="Clear analytics filters">Clear</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="analytics-stats">
+        <article class="analytics-stat-card">
+          <span class="analytics-stat-icon" aria-hidden="true">⚡</span>
+          <div class="analytics-stat-meta">
+            <span class="analytics-stat-value" id="active-problems-count">0</span>
+            <span class="analytics-stat-label">Active Issues</span>
+          </div>
+        </article>
+        <article class="analytics-stat-card">
+          <span class="analytics-stat-icon" aria-hidden="true">✅</span>
+          <div class="analytics-stat-meta">
+            <span class="analytics-stat-value" id="restored-services-count">0</span>
+            <span class="analytics-stat-label">Resolved</span>
+          </div>
+        </article>
+        <article class="analytics-stat-card">
+          <span class="analytics-stat-icon" aria-hidden="true">📊</span>
+          <div class="analytics-stat-meta">
+            <span class="analytics-stat-value" id="total-records-count">0</span>
+            <span class="analytics-stat-label">Total Reports</span>
+          </div>
+        </article>
+        <article class="analytics-stat-card">
+          <span class="analytics-stat-icon" aria-hidden="true">⏱️</span>
+          <div class="analytics-stat-meta">
+            <span class="analytics-stat-value" id="analytics-overdue-count">0</span>
+            <span class="analytics-stat-label">&gt;24h Active</span>
+          </div>
+        </article>
+      </div>
+
+      <div class="analytics-charts">
+        <div class="records-chart-wrap analytics-chart-card analytics-chart-wide">
+          <h2 class="records-table-title">Reports Per Day</h2>
+          <canvas id="reports-per-day-chart"></canvas>
+        </div>
+        <div class="records-chart-wrap analytics-chart-card">
+          <h2 class="records-table-title">Top Municipalities</h2>
+          <canvas id="top-municipalities-chart"></canvas>
+        </div>
+        <div class="records-chart-wrap analytics-chart-card">
+          <h2 class="records-table-title">Top Barangays</h2>
+          <canvas id="top-barangays-chart"></canvas>
+        </div>
+      </div>
+
+      <div class="analytics-split">
+        <div class="analytics-card analytics-card-wide">
+          <h2 class="analytics-card-title" id="top-munis-title">Top Municipalities</h2>
+          <ul class="analytics-list" id="top-municipalities-list"></ul>
+        </div>
+      </div>
+
+      <div class="analytics-bottom">
+        <div class="analytics-table-wrap">
+          <h2 class="analytics-table-title">Municipality Performance</h2>
+          <div class="analytics-table">
+            <div class="analytics-table-header">
+              <span>Municipality</span>
+              <span>Reports</span>
+              <span>Active</span>
+              <span>Resolved</span>
+              <span>&gt;24h</span>
+            </div>
+            <div id="analytics-municipality-table-rows"></div>
+          </div>
+        </div>
+
+        <div class="records-table-wrap">
+          <div class="records-table-header-controls">
+            <div class="records-table-title-group">
+              <h2 class="records-table-title" style="font-size:1.25rem;">Recent Activity</h2>
+              <div class="records-table-badge" style="color:#7c2d12; background:#fff7ed;">Quick drill-down</div>
+            </div>
+          </div>
+          <div class="analytics-recent-body" style="padding: 1rem 1.25rem 1.25rem;">
+            <div id="analytics-recent-list" class="issue-list"></div>
+            <div id="analytics-recent-empty" class="records-empty" style="display:none;">No reports match the current filters.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="main-footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <a href="dashboard.html" class="footer-logo">
+          <img src="../assets/images/logo.png" alt="SAMELCO II logo" class="footer-logo-img">
+          <div class="footer-logo-text">
+            <span class="footer-logo-title">SAMELCO II</span>
+            <span class="footer-logo-sub">SAMAR ELECTRIC COOPERATIVE, INC.</span>
+          </div>
+        </a>
+        <p>Providing reliable and sustainable electric service to the province of Samar. Dedicated to empowering communities through energy.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="dashboard.html">Home Dashboard</a></li>
+          <li><a href="records.html">Consumer Records</a></li>
+          <li><a href="analytics.html">Data Analytics</a></li>
+          <li><a href="teams.html">Team Management</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact Support</a></li>
+          <li><a href="report.html">Report an Issue</a></li>
+        </ul>
+      </div>
+      <div class="footer-contact">
+        <h4>Contact Us</h4>
+        <div class="footer-contact-info">
+          <div class="footer-contact-item">
+            <span class="footer-contact-icon">📍</span>
+            <span>Paranas, Samar, Philippines</span>
+          </div>
+          <div class="footer-contact-item">
+            <span class="footer-contact-icon">📞</span>
+            <span>+63 (055) 123-4567</span>
+          </div>
+          <div class="footer-contact-item">
+            <span class="footer-contact-icon">✉️</span>
+            <span>support@samelcodos.ph</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">
+        &copy; 2026 SAMELCO II. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <button type="button" class="back-to-top" id="back-to-top" title="Back to Top">
+    <span>↑</span>
+  </button>
+
+  <script src="../js/analytics.js"></script>
+  <script>
+    // Back to Top functionality
+    const backToTopBtn = document.getElementById('back-to-top');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        backToTopBtn.classList.add('visible');
+      } else {
+        backToTopBtn.classList.remove('visible');
+      }
+    });
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>

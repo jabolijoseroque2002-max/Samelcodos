@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../assets/vendor/leaflet/leaflet.css" />
+  <script src="../assets/vendor/leaflet/leaflet.js"></script>
+</head>
+<body class="page-login">
+  <div class="bg-image" aria-hidden="true"></div>
+  <div class="noise"></div>
+  <div class="orb orb-1"></div>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="#carousel" class="nav-logo">
+        <span class="nav-logo-icon" aria-hidden="true">
+          <img src="../assets/images/logo.png" alt="SAMELCO II logo" class="nav-logo-img">
+        </span>
+        <span class="nav-logo-text">
+          <span class="nav-logo-title">SAMELCO II</span>
+          <span class="nav-logo-sub">SAMAR ELECTRIC COOPERATIVE, INC.</span>
+        </span>
+      </a>
+      <div class="nav-right">
+      </div>
+    </div>
+  </nav>
+
+  <div class="main-container">
+    <section class="showcase-panel" id="carousel" aria-label="Image carousel">
+      <div class="carousel-section">
+        <div class="carousel">
+          <div class="carousel-track">
+            <div class="carousel-slide carousel-slide-1"></div>
+            <div class="carousel-slide carousel-slide-2"></div>
+            <div class="carousel-slide carousel-slide-3"></div>
+          </div>
+        </div>
+      </div>
+      <div class="carousel-dots" aria-hidden="true">
+        <button type="button" class="carousel-dot active" data-slide="0" aria-label="Slide 1"></button>
+        <button type="button" class="carousel-dot" data-slide="1" aria-label="Slide 2"></button>
+        <button type="button" class="carousel-dot" data-slide="2" aria-label="Slide 3"></button>
+      </div>
+    </section>
+
+    <main class="container login-panel" id="auth-section">
+      <div class="login-shell">
+        <section class="login-copy">
+          <p class="login-kicker">We keep everything</p>
+          <h1>Ready to Login</h1>
+          <div class="auth-tabs" aria-label="Account access">
+            <button type="button" class="tab active" data-tab="login">Login</button>
+            <button type="button" class="tab" data-tab="team">Team Login</button>
+            <button type="button" class="tab" data-tab="personnel">Personnel Login</button>
+            <button type="button" class="tab" data-tab="signup">Register</button>
+          </div>
+          <form id="login-form" class="form active">
+            <div class="input-wrap">
+              <input type="text" id="login-email" placeholder="Email" required autocomplete="username">
+              <label for="login-email" class="sr-only">Email</label>
+            </div>
+            <div class="input-wrap">
+              <input type="password" id="login-password" placeholder="Password" required autocomplete="current-password">
+              <label for="login-password" class="sr-only">Password</label>
+            </div>
+            <a href="#" class="forgot">Forgot password?</a>
+            <button type="submit" class="btn btn-primary">Login</button>
+          </form>
+          <form id="team-login-form" class="form" aria-hidden="true">
+            <div class="input-wrap">
+              <input type="email" id="team-login-email" placeholder="Team dashboard email" required autocomplete="username">
+              <label for="team-login-email" class="sr-only">Team Dashboard Email</label>
+            </div>
+            <div class="input-wrap">
+              <input type="password" id="team-login-password" placeholder="Team dashboard password" required autocomplete="current-password">
+              <label for="team-login-password" class="sr-only">Team Dashboard Password</label>
+            </div>
+            <p style="margin:0 0 1rem; color:#64748b; font-size:0.92rem; line-height:1.5;">Use the email and password created for your team from the Teams page.</p>
+            <button type="submit" class="btn btn-primary">Open Team Dashboard</button>
+          </form>
+          <form id="personnel-login-form" class="form" aria-hidden="true">
+            <div class="input-wrap">
+              <input type="email" id="personnel-login-email" placeholder="Personnel email" required autocomplete="username">
+              <label for="personnel-login-email" class="sr-only">Personnel Email</label>
+            </div>
+            <div class="input-wrap">
+              <input type="password" id="personnel-login-password" placeholder="Personnel password" required autocomplete="current-password">
+              <label for="personnel-login-password" class="sr-only">Personnel Password</label>
+            </div>
+            <p style="margin:0 0 1rem; color:#64748b; font-size:0.92rem; line-height:1.5;">Use the email and password created by your team admin when your personnel account was added.</p>
+            <button type="submit" class="btn btn-primary">Open Personnel Dashboard</button>
+          </form>
+          <form id="signup-form" class="form" aria-hidden="true">
+            <div class="input-wrap">
+              <input id="signup-name" type="text" placeholder="Full name" required autocomplete="name">
+              <label for="signup-name" class="sr-only">Full Name</label>
+            </div>
+            <div class="input-wrap">
+              <input id="signup-email" type="email" placeholder="Email" required autocomplete="email">
+              <label for="signup-email" class="sr-only">Email</label>
+            </div>
+            <div class="input-wrap">
+              <input id="signup-contact" type="text" placeholder="Contact number" required autocomplete="tel">
+              <label for="signup-contact" class="sr-only">Contact Number</label>
+            </div>
+            <div class="input-wrap">
+              <input id="signup-account-number" type="text" placeholder="Account number" required>
+              <label for="signup-account-number" class="sr-only">Account Number</label>
+            </div>
+            <div class="input-wrap">
+              <select id="signup-municipality" required>
+                <option value="" selected disabled hidden></option>
+              </select>
+              <label for="signup-municipality">Municipality</label>
+            </div>
+            <div class="input-wrap">
+              <select id="signup-barangay" required disabled>
+                <option value="" selected disabled hidden></option>
+              </select>
+              <label for="signup-barangay">Barangay</label>
+            </div>
+            <div class="input-wrap">
+              <input id="signup-password" type="password" placeholder="Password" required autocomplete="new-password">
+              <label for="signup-password" class="sr-only">Password</label>
+            </div>
+            <div class="input-wrap">
+              <input id="signup-confirm-password" type="password" placeholder="Confirm password" required autocomplete="new-password">
+              <label for="signup-confirm-password" class="sr-only">Confirm Password</label>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Customer Account</button>
+          </form>
+        </section>
+        <aside class="login-icon-wrap">
+          <img src="../assets/images/icon.png" alt="SAMELCO II icon" class="showcase-figure">
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/municipalities-data.js"></script>
+  <script src="../js/script.js"></script>
+</body>
+</html>

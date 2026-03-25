@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard SAMELCO II</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../assets/vendor/leaflet/leaflet.css" />
+  <script src="../assets/vendor/leaflet/leaflet.js"></script>
+</head>
+<body class="page-dashboard">
+  <div class="bg-image" aria-hidden="true"></div>
+  <div class="noise"></div>
+  <div class="orb orb-1"></div>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="dashboard.html" class="nav-logo">
+        <span class="nav-logo-icon" aria-hidden="true">
+          <img src="../assets/images/logo.png" alt="SAMELCO II logo" class="nav-logo-img">
+        </span>
+        <span class="nav-logo-text">
+          <span class="nav-logo-title">SAMELCO II</span>
+          <span class="nav-logo-sub">SAMAR ELECTRIC COOPERATIVE, INC.</span>
+        </span>
+      </a>
+      <div class="nav-right">
+        <div class="notif-wrap" id="notif-wrap">
+          <button type="button" class="notif-btn" id="notif-btn" aria-haspopup="true" aria-expanded="false" title="Notifications">
+            <span class="notif-icon">🔔</span>
+            <span class="notif-badge" id="notif-badge" style="display:none;">0</span>
+          </button>
+          <div class="notif-dropdown" id="notif-dropdown">
+            <div class="notif-header">
+              <div class="notif-head">
+                <span class="notif-head-icon">🔔</span>
+                <div class="notif-head-text">
+                  <div class="notif-head-title">New Reports</div>
+                  <div class="notif-head-sub" id="notif-summary">0 new</div>
+                </div>
+              </div>
+              <button type="button" class="notif-clear-all" id="notif-clear-all" title="Mark all as read">Mark all as read</button>
+            </div>
+            <div class="notif-list" id="notif-list"></div>
+            <div class="notif-empty" id="notif-empty">
+              <div class="empty-title">No new reports</div>
+            </div>
+          </div>
+        </div>
+        <div class="nav-links">
+          <a href="dashboard.html" class="nav-link" aria-current="page">Home</a>
+          <a href="records.html" class="nav-link">Records</a>
+          <a href="analytics.html" class="nav-link">Analytics</a>
+          <a href="teams.html" class="nav-link">Teams</a>
+          <a href="contact.html" class="nav-link">Contact</a>
+          <a href="about.html" class="nav-link">About</a>
+        </div>
+        <span class="nav-user-welcome">Welcome, <span id="user-name">User</span></span>
+        <button type="button" class="nav-btn nav-btn-cta" id="logout-btn">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <section class="map-section" id="map-section">
+      <div class="map-content-wrapper">
+        <div class="map-wrapper">
+          <div id="map" class="map-canvas"></div>
+        </div>
+        <div id="municipalities-panel" class="municipalities-panel">
+          <h3 class="municipalities-panel-title">MUNICIPALITIES</h3>
+          <p class="municipalities-panel-subtitle">Select a map pin to open the municipality list and view barangays.</p>
+          <div class="municipalities-controls">
+            <span class="issues-summary" id="issues-summary"></span>
+            <button type="button" id="toggle-audit-btn" class="records-export-btn" style="margin-left:auto;">Audit Logs</button>
+          </div>
+          <div id="municipalities-sidebar-list" class="municipalities-list"></div>
+          <div id="audit-logs" style="display:none; margin-top:0.75rem; border:1px solid #111; padding:0.75rem; border-radius:8px; background:#fff;">
+            <div style="font-weight:700; margin-bottom:0.5rem;">Recent Actions</div>
+            <div id="audit-logs-empty" style="color:#555;">No logs yet.</div>
+            <ul id="audit-logs-list" style="list-style:none; padding-left:0; margin:0; max-height: 300px; overflow-y: auto;"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  
+  <div id="alarm-permission" style="position:fixed; right:16px; bottom:16px; z-index:9999; display:none; background:#1a1512; color:#ffd000; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,208,0,0.35); box-shadow:0 8px 24px rgba(0,0,0,0.2);">
+    <span style="margin-right:8px;">🔔 Enable sound alerts</span>
+    <button id="enable-alerts-btn" style="background:#ffd000; color:#1a1512; border:none; border-radius:6px; padding:6px 10px; cursor:pointer;">Enable</button>
+  </div>
+
+  <div id="urgent-report-modal" class="modal urgent-report-modal" style="display:none;">
+    <div class="modal-content urgent-report-modal-content">
+      <span class="close-modal" id="close-urgent-report-modal">&times;</span>
+      <div class="urgent-report-kicker">Urgent Report</div>
+      <h2 id="urgent-report-title">Immediate attention required</h2>
+      <p class="urgent-report-subtitle" id="urgent-report-subtitle">A new urgent report needs immediate crew attention.</p>
+      <ul class="info-list urgent-report-list" id="urgent-report-info-list"></ul>
+      <div class="urgent-report-actions">
+        <button type="button" class="nav-btn nav-btn-cta" id="urgent-report-view-btn">View on Map</button>
+        <button type="button" class="records-export-btn" id="urgent-report-dismiss-btn">Dismiss</button>
+      </div>
+    </div>
+  </div>
+
+  <audio id="alarm-audio" preload="auto"></audio>
+
+  <footer class="main-footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <a href="dashboard.html" class="footer-logo">
+          <img src="../assets/images/logo.png" alt="SAMELCO II logo" class="footer-logo-img">
+          <div class="footer-logo-text">
+            <span class="footer-logo-title">SAMELCO II</span>
+            <span class="footer-logo-sub">SAMAR ELECTRIC COOPERATIVE, INC.</span>
+          </div>
+        </a>
+        <p>Providing reliable and sustainable electric service to the province of Samar. Dedicated to empowering communities through energy.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="dashboard.html">Home Dashboard</a></li>
+          <li><a href="records.html">Consumer Records</a></li>
+          <li><a href="analytics.html">Data Analytics</a></li>
+          <li><a href="teams.html">Team Management</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact Support</a></li>
+          <li><a href="report.html">Report an Issue</a></li>
+        </ul>
+      </div>
+      <div class="footer-contact">
+        <h4>Contact Us</h4>
+        <div class="footer-contact-info">
+          <div class="footer-contact-item">
+            <span class="footer-contact-icon">📍</span>
+            <span>Paranas, Samar, Philippines</span>
+          </div>
+          <div class="footer-contact-item">
+            <span class="footer-contact-icon">📞</span>
+            <span>+63 (055) 123-4567</span>
+          </div>
+          <div class="footer-contact-item">
+            <span class="footer-contact-icon">✉️</span>
+            <span>support@samelcodos.ph</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">
+        &copy; 2026 SAMELCO II. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <button type="button" class="back-to-top" id="back-to-top" title="Back to Top">
+    <span>↑</span>
+  </button>
+
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/coverage-samelco-geojson.js"></script>
+  <script src="../js/dashboard.js"></script>
+  <script>
+    // Back to Top functionality
+    const backToTopBtn = document.getElementById('back-to-top');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        backToTopBtn.classList.add('visible');
+      } else {
+        backToTopBtn.classList.remove('visible');
+      }
+    });
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>

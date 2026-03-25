@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Dashboard - SAMELCO II</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .team-mission-board {
+      display: grid;
+      gap: 1rem;
+    }
+    .team-mission-card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(148, 163, 184, 0.24);
+      border-radius: 22px;
+      padding: 1.25rem;
+      box-shadow: 0 18px 44px -28px rgba(15, 23, 42, 0.35);
+    }
+    .team-mission-card.is-urgent {
+      border-color: rgba(220, 38, 38, 0.22);
+      box-shadow: 0 20px 48px -26px rgba(220, 38, 38, 0.28);
+    }
+    .team-mission-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-bottom: 0.85rem;
+    }
+    .team-mission-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #8b2a2a;
+      background: rgba(139, 42, 42, 0.08);
+      border-radius: 999px;
+      padding: 0.35rem 0.7rem;
+      margin-bottom: 0.7rem;
+    }
+    .team-mission-title {
+      margin: 0;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.2rem;
+      color: #0f172a;
+    }
+    .team-mission-status {
+      flex-shrink: 0;
+      border-radius: 999px;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .team-mission-status.is-pending {
+      background: #fef3c7;
+      color: #b45309;
+    }
+    .team-mission-status.is-ontheway {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+    .team-mission-status.is-resolved {
+      background: #dcfce7;
+      color: #15803d;
+    }
+    .team-mission-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.85rem;
+      margin: 1rem 0;
+    }
+    .team-mission-meta {
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 0.9rem 1rem;
+    }
+    .team-mission-meta span {
+      display: block;
+      font-size: 0.78rem;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.3rem;
+    }
+    .team-mission-meta strong {
+      color: #0f172a;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    .team-mission-description {
+      margin: 0;
+      color: #334155;
+      line-height: 1.6;
+    }
+    .team-mission-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .team-mission-assignment {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      align-items: center;
+    }
+    .team-personnel-checklist {
+      display: grid;
+      gap: 0.65rem;
+      flex: 1 1 100%;
+    }
+    .team-personnel-checklist-empty {
+      background: #fff7ed;
+      border: 1px dashed #fdba74;
+      border-radius: 12px;
+      color: #9a3412;
+      padding: 0.9rem 1rem;
+      font-size: 0.9rem;
+    }
+    .team-personnel-option {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.75rem 0.9rem;
+      border: 1px solid #dbe4f0;
+      border-radius: 12px;
+      background: #fff;
+    }
+    .team-personnel-option.is-done {
+      border-color: #86efac;
+      background: #f0fdf4;
+    }
+    .team-personnel-checkbox {
+      margin: 0;
+      width: 1rem;
+      height: 1rem;
+    }
+    .team-personnel-option-label {
+      flex: 1;
+      color: #0f172a;
+      font-weight: 600;
+    }
+    .team-personnel-option-state {
+      border-radius: 999px;
+      padding: 0.28rem 0.7rem;
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: #e2e8f0;
+      color: #475569;
+    }
+    .team-personnel-option-state.is-assigned {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+    .team-personnel-option-state.is-done {
+      background: #dcfce7;
+      color: #15803d;
+    }
+    .team-mission-assignment select {
+      flex: 1;
+      min-width: 180px;
+      padding: 0.75rem 0.85rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      background: #fff;
+      color: #0f172a;
+      font-size: 0.92rem;
+    }
+    .team-mission-actions .nav-btn,
+    .team-mission-actions .team-btn {
+      margin: 0;
+    }
+    .team-dashboard-note {
+      margin-top: 0.8rem;
+      color: #475569;
+      line-height: 1.6;
+    }
+    .team-mission-meta-wide {
+      grid-column: span 2;
+    }
+    .team-mission-personnel-display {
+      margin-top: 0.2rem;
+    }
+    .team-personnel-summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+    .team-personnel-chip {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 0.32rem 0.72rem;
+      background: #e2e8f0;
+      color: #334155;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .team-personnel-chip.is-assigned {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+    .team-personnel-chip.is-done {
+      background: #dcfce7;
+      color: #15803d;
+    }
+    .team-personnel-empty {
+      color: #475569;
+      font-weight: 600;
+    }
+    .team-notification-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    .team-notification-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 0.95rem 1rem;
+    }
+    .team-notification-item strong {
+      display: block;
+      color: #0f172a;
+      margin-bottom: 0.3rem;
+    }
+    .team-notification-item span {
+      display: block;
+      color: #64748b;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+    .personnel-toast {
+      position: fixed;
+      right: 1.25rem;
+      bottom: 1.25rem;
+      z-index: 10010;
+    }
+    .personnel-toast-card {
+      background: rgba(15, 23, 42, 0.96);
+      color: #fff;
+      border-radius: 18px;
+      padding: 1rem 1.1rem;
+      min-width: 260px;
+      max-width: 360px;
+      box-shadow: 0 18px 45px -20px rgba(15, 23, 42, 0.7);
+    }
+    .personnel-toast-kicker {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #fca5a5;
+      margin-bottom: 0.35rem;
+      font-weight: 700;
+    }
+    .personnel-toast-message {
+      line-height: 1.5;
+      font-size: 0.95rem;
+    }
+    .personnel-toast-close {
+      margin-top: 0.8rem;
+      background: rgba(255,255,255,0.14);
+      border: none;
+      color: #fff;
+      border-radius: 999px;
+      padding: 0.45rem 0.8rem;
+      cursor: pointer;
+      font-size: 0.84rem;
+    }
+    @media (max-width: 720px) {
+      .team-mission-header {
+        flex-direction: column;
+      }
+      .team-mission-status {
+        align-self: flex-start;
+      }
+    }
+  </style>
+</head>
+<body class="page-user-dashboard page-team-dashboard">
+  <div class="bg-image" aria-hidden="true"></div>
+  <div class="noise"></div>
+  <div class="orb orb-1"></div>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="nav-logo-icon" aria-hidden="true">
+          <img src="../assets/images/logo.png" alt="SAMELCO II logo" class="nav-logo-img">
+        </span>
+        <span class="nav-logo-text">
+          <span class="nav-logo-title">SAMELCO II</span>
+          <span class="nav-logo-sub">SAMAR ELECTRIC COOPERATIVE, INC.</span>
+        </span>
+      </a>
+      <div class="nav-right">
+        <button type="button" class="nav-btn" id="team-dashboard-logout">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="user-dashboard-main">
+    <section class="user-hero">
+      <div class="user-hero-copy">
+        <p class="user-hero-kicker">Team Dashboard</p>
+        <h1><span id="team-dashboard-name">Team</span> Mission Board</h1>
+        <p class="user-hero-subtitle">This dashboard shows only the reports assigned to your team. Use it to monitor active jobs and move them from pending to on the way or resolved.</p>
+        <div class="user-hero-actions">
+          <a href="#team-missions" class="nav-btn nav-btn-report">View Assigned Reports</a>
+        </div>
+      </div>
+      <div class="user-hero-stats">
+        <article class="user-stat-card">
+          <span class="user-stat-label">Assigned</span>
+          <strong id="team-stat-total">0</strong>
+          <p>Total reports assigned to this team.</p>
+        </article>
+        <article class="user-stat-card">
+          <span class="user-stat-label">Pending</span>
+          <strong id="team-stat-pending">0</strong>
+          <p>Jobs that still need movement from the team.</p>
+        </article>
+        <article class="user-stat-card">
+          <span class="user-stat-label">On The Way</span>
+          <strong id="team-stat-ontheway">0</strong>
+          <p>Reports actively being handled right now.</p>
+        </article>
+        <article class="user-stat-card">
+          <span class="user-stat-label">Resolved</span>
+          <strong id="team-stat-resolved">0</strong>
+          <p>Completed reports for this dashboard session.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="user-dashboard-grid">
+      <section class="user-panel user-panel-form" id="team-missions">
+        <div class="user-panel-headline">
+          <p class="user-panel-kicker">Assigned Work</p>
+          <h2>Mission Board</h2>
+          <p>Every report below belongs to <strong id="team-dashboard-name-inline">this team</strong>. Status changes here update the shared system records.</p>
+        </div>
+        <div class="user-report-actions" style="justify-content:flex-start; margin-bottom:1.25rem;">
+          <button type="button" class="nav-btn nav-btn-cta" id="team-dashboard-refresh" style="margin:0;">Refresh Reports</button>
+          <button type="button" class="team-btn team-btn-toggle" id="team-dashboard-add-personnel" style="margin:0;">+ Add Personnel</button>
+        </div>
+        <div id="team-missions-empty" class="user-empty-state">No reports are assigned to this team yet.</div>
+        <div id="team-missions-list" class="team-mission-board"></div>
+      </section>
+
+      <aside class="user-dashboard-side">
+        <section class="user-panel">
+          <div class="user-panel-head">
+            <h3>Dashboard Access</h3>
+          </div>
+          <div class="latest-report-details">
+            <div class="latest-report-row">
+              <span>Team</span>
+              <strong id="team-dashboard-summary-name">-</strong>
+            </div>
+            <div class="latest-report-row">
+              <span>Email</span>
+              <strong id="team-dashboard-email">-</strong>
+            </div>
+            <div class="latest-report-row">
+              <span>Last Login</span>
+              <strong id="team-dashboard-last-login">-</strong>
+            </div>
+          </div>
+          <p class="team-dashboard-note">If the team is deactivated from the Teams page, this dashboard login will stop working until it is activated again.</p>
+        </section>
+
+        <section class="user-panel">
+          <div class="user-panel-head">
+            <h3>Assignment Notifications</h3>
+          </div>
+          <div id="personnel-alert-empty" class="user-empty-state">No new assignment alerts.</div>
+          <div id="personnel-alert-list" class="team-notification-list"></div>
+        </section>
+
+        <section class="user-panel">
+          <div class="user-panel-head">
+            <h3>Latest Assigned Report</h3>
+          </div>
+          <div id="team-latest-empty" class="user-empty-state">Waiting for the first assigned report.</div>
+          <div id="team-latest-card" class="latest-report-card" hidden>
+            <div class="latest-report-queue">
+              <span>Queue Number</span>
+              <strong id="team-latest-queue">Pending</strong>
+            </div>
+            <div class="latest-report-details">
+              <div class="latest-report-row">
+                <span>Issue</span>
+                <strong id="team-latest-issue">-</strong>
+              </div>
+              <div class="latest-report-row">
+                <span>Location</span>
+                <strong id="team-latest-location">-</strong>
+              </div>
+              <div class="latest-report-row">
+                <span>Status</span>
+                <strong id="team-latest-status">-</strong>
+              </div>
+              <div class="latest-report-row">
+                <span>Assigned</span>
+                <strong id="team-latest-time">-</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="user-panel user-help-panel">
+          <div class="user-panel-head">
+            <h3>Workflow</h3>
+          </div>
+          <ol class="user-step-list">
+            <li>Open this dashboard using the email and password saved when the team was created.</li>
+            <li>Review the assigned report details and priority level.</li>
+            <li>Move the report to <strong>On the Way</strong> or <strong>Resolved</strong> as your team progresses.</li>
+            <li>Refresh the board any time to pull the newest assignments from Supabase.</li>
+          </ol>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <div id="team-personnel-modal" class="modal modal-overlay" style="display:none; position:fixed; z-index:10004; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.6);">
+    <div class="modal-content modal-content-styled" style="background:#fff; margin:8% auto; padding:2rem; border-radius:20px; width:94%; max-width:520px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); border:1px solid rgba(139,42,42,0.1);">
+      <div style="margin-bottom:1.25rem;">
+        <h2 style="margin:0; color:#8b2a2a; font-family:'Outfit', sans-serif; font-weight:700;">Add Personnel</h2>
+        <p id="team-personnel-modal-team" style="margin:0.4rem 0 0; color:#64748b;">Create a personnel account for this team.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:1rem;">
+        <div>
+          <label for="team-personnel-name" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#475569;">Full Name</label>
+          <input type="text" id="team-personnel-name" class="form-input" style="width:100%; padding:0.75rem; border:2px solid #e2e8f0; border-radius:10px; font-family:inherit;" placeholder="Enter personnel full name">
+        </div>
+        <div>
+          <label for="team-personnel-email" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#475569;">Email</label>
+          <input type="email" id="team-personnel-email" class="form-input" style="width:100%; padding:0.75rem; border:2px solid #e2e8f0; border-radius:10px; font-family:inherit;" placeholder="personnel@example.com">
+        </div>
+        <div>
+          <label for="team-personnel-password" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#475569;">Password</label>
+          <input type="password" id="team-personnel-password" class="form-input" style="width:100%; padding:0.75rem; border:2px solid #e2e8f0; border-radius:10px; font-family:inherit;" placeholder="Minimum 8 characters">
+        </div>
+        <div>
+          <label for="team-personnel-confirm-password" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#475569;">Confirm Password</label>
+          <input type="password" id="team-personnel-confirm-password" class="form-input" style="width:100%; padding:0.75rem; border:2px solid #e2e8f0; border-radius:10px; font-family:inherit;" placeholder="Re-enter password">
+        </div>
+      </div>
+      <div style="margin-top:1.5rem; display:flex; justify-content:flex-end; gap:0.75rem;">
+        <button type="button" id="team-personnel-cancel" class="team-btn team-btn-toggle">Cancel</button>
+        <button type="button" id="team-personnel-save" class="nav-btn nav-btn-cta" style="margin:0;">Save Personnel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="personnel-task-toast" class="personnel-toast" hidden>
+    <div class="personnel-toast-card" role="status" aria-live="polite" aria-atomic="true">
+      <div class="personnel-toast-kicker">New Assignment</div>
+      <div class="personnel-toast-message" id="personnel-task-toast-message">A personnel assignment was updated.</div>
+      <button type="button" class="personnel-toast-close" id="personnel-task-toast-close">Close</button>
+    </div>
+  </div>
+
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/team-dashboard.js"></script>
+</body>
+</html>

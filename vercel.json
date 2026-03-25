@@ -1,0 +1,107 @@
+{
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer-when-downgrade"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/html/index.html"
+    },
+    {
+      "source": "/index",
+      "destination": "/html/index.html"
+    },
+    {
+      "source": "/index.html",
+      "destination": "/html/index.html"
+    },
+    {
+      "source": "/about",
+      "destination": "/html/about.html"
+    },
+    {
+      "source": "/about.html",
+      "destination": "/html/about.html"
+    },
+    {
+      "source": "/analytics",
+      "destination": "/html/analytics.html"
+    },
+    {
+      "source": "/analytics.html",
+      "destination": "/html/analytics.html"
+    },
+    {
+      "source": "/contact",
+      "destination": "/html/contact.html"
+    },
+    {
+      "source": "/contact.html",
+      "destination": "/html/contact.html"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/html/dashboard.html"
+    },
+    {
+      "source": "/dashboard.html",
+      "destination": "/html/dashboard.html"
+    },
+    {
+      "source": "/records",
+      "destination": "/html/records.html"
+    },
+    {
+      "source": "/records.html",
+      "destination": "/html/records.html"
+    },
+    {
+      "source": "/report",
+      "destination": "/html/report.html"
+    },
+    {
+      "source": "/report.html",
+      "destination": "/html/report.html"
+    },
+    {
+      "source": "/user-dashboard",
+      "destination": "/html/user-dashboard.html"
+    },
+    {
+      "source": "/user-dashboard.html",
+      "destination": "/html/user-dashboard.html"
+    },
+    {
+      "source": "/team-dashboard",
+      "destination": "/html/team-dashboard.html"
+    },
+    {
+      "source": "/team-dashboard.html",
+      "destination": "/html/team-dashboard.html"
+    },
+    {
+      "source": "/personnel-dashboard",
+      "destination": "/html/personnel-dashboard.html"
+    },
+    {
+      "source": "/personnel-dashboard.html",
+      "destination": "/html/personnel-dashboard.html"
+    }
+  ]
+}

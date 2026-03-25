@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personnel Dashboard - SAMELCO II</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .personnel-board {
+      display: grid;
+      gap: 1rem;
+    }
+    .personnel-task-card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(148, 163, 184, 0.24);
+      border-radius: 22px;
+      padding: 1.25rem;
+      box-shadow: 0 18px 44px -28px rgba(15, 23, 42, 0.35);
+    }
+    .personnel-task-card.is-urgent {
+      border-color: rgba(220, 38, 38, 0.22);
+      box-shadow: 0 20px 48px -26px rgba(220, 38, 38, 0.28);
+    }
+    .personnel-task-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-bottom: 0.9rem;
+    }
+    .personnel-task-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #8b2a2a;
+      background: rgba(139, 42, 42, 0.08);
+      border-radius: 999px;
+      padding: 0.35rem 0.7rem;
+      margin-bottom: 0.7rem;
+    }
+    .personnel-task-title {
+      margin: 0;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.18rem;
+      color: #0f172a;
+    }
+    .personnel-task-status {
+      flex-shrink: 0;
+      border-radius: 999px;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .personnel-task-status.is-pending {
+      background: #fef3c7;
+      color: #b45309;
+    }
+    .personnel-task-status.is-ontheway {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+    .personnel-task-status.is-resolved {
+      background: #dcfce7;
+      color: #15803d;
+    }
+    .personnel-task-status.is-done {
+      background: #ccfbf1;
+      color: #0f766e;
+    }
+    .personnel-task-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.85rem;
+      margin: 1rem 0;
+    }
+    .personnel-task-meta {
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 0.9rem 1rem;
+    }
+    .personnel-task-meta span {
+      display: block;
+      font-size: 0.78rem;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.3rem;
+    }
+    .personnel-task-meta strong {
+      color: #0f172a;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    .personnel-task-description {
+      margin: 0;
+      color: #334155;
+      line-height: 1.6;
+    }
+    .personnel-task-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .personnel-done-btn {
+      background: #0f766e;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 0.78rem 1.15rem;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+    .personnel-done-btn:hover {
+      opacity: 0.92;
+    }
+    .personnel-notification-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    .personnel-notification-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 0.95rem 1rem;
+    }
+    .personnel-notification-item strong {
+      display: block;
+      color: #0f172a;
+      margin-bottom: 0.3rem;
+    }
+    .personnel-notification-item span {
+      display: block;
+      color: #64748b;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+    .personnel-toast {
+      position: fixed;
+      right: 1.25rem;
+      bottom: 1.25rem;
+      z-index: 10010;
+    }
+    .personnel-toast-card {
+      background: rgba(15, 23, 42, 0.96);
+      color: #fff;
+      border-radius: 18px;
+      padding: 1rem 1.1rem;
+      min-width: 260px;
+      max-width: 360px;
+      box-shadow: 0 18px 45px -20px rgba(15, 23, 42, 0.7);
+    }
+    .personnel-toast-kicker {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #fca5a5;
+      margin-bottom: 0.35rem;
+      font-weight: 700;
+    }
+    .personnel-toast-message {
+      line-height: 1.5;
+      font-size: 0.95rem;
+    }
+    .personnel-toast-close {
+      margin-top: 0.8rem;
+      background: rgba(255,255,255,0.14);
+      border: none;
+      color: #fff;
+      border-radius: 999px;
+      padding: 0.45rem 0.8rem;
+      cursor: pointer;
+      font-size: 0.84rem;
+    }
+    @media (max-width: 720px) {
+      .personnel-task-header {
+        flex-direction: column;
+      }
+      .personnel-task-status {
+        align-self: flex-start;
+      }
+    }
+  </style>
+</head>
+<body class="page-user-dashboard page-personnel-dashboard">
+  <div class="bg-image" aria-hidden="true"></div>
+  <div class="noise"></div>
+  <div class="orb orb-1"></div>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="nav-logo-icon" aria-hidden="true">
+          <img src="../assets/images/logo.png" alt="SAMELCO II logo" class="nav-logo-img">
+        </span>
+        <span class="nav-logo-text">
+          <span class="nav-logo-title">SAMELCO II</span>
+          <span class="nav-logo-sub">SAMAR ELECTRIC COOPERATIVE, INC.</span>
+        </span>
+      </a>
+      <div class="nav-right">
+        <button type="button" class="nav-btn" id="personnel-dashboard-logout">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="user-dashboard-main">
+    <section class="user-hero">
+      <div class="user-hero-copy">
+        <p class="user-hero-kicker">Personnel Dashboard</p>
+        <h1>Welcome, <span id="personnel-dashboard-name">Personnel</span>.</h1>
+        <p class="user-hero-subtitle">This dashboard shows only the jobs assigned to you by your team admin. Keep this page open to receive assignment alerts and task updates.</p>
+        <div class="user-hero-actions">
+          <a href="#personnel-tasks" class="nav-btn nav-btn-report">View My Tasks</a>
+        </div>
+      </div>
+      <div class="user-hero-stats">
+        <article class="user-stat-card">
+          <span class="user-stat-label">Assigned</span>
+          <strong id="personnel-stat-total">0</strong>
+          <p>Total tasks currently linked to your account.</p>
+        </article>
+        <article class="user-stat-card">
+          <span class="user-stat-label">Pending</span>
+          <strong id="personnel-stat-pending">0</strong>
+          <p>Tasks waiting for team movement.</p>
+        </article>
+        <article class="user-stat-card">
+          <span class="user-stat-label">On The Way</span>
+          <strong id="personnel-stat-ontheway">0</strong>
+          <p>Active field work in progress.</p>
+        </article>
+        <article class="user-stat-card">
+          <span class="user-stat-label">Done / Resolved</span>
+          <strong id="personnel-stat-resolved">0</strong>
+          <p>Tasks you marked done or reports already resolved.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="user-dashboard-grid">
+      <section class="user-panel user-panel-form" id="personnel-tasks">
+        <div class="user-panel-headline">
+          <p class="user-panel-kicker">Assigned Work</p>
+          <h2>My Task Board</h2>
+          <p>Every task here was assigned to your personnel account. Refresh any time to pull the newest updates.</p>
+        </div>
+        <div class="user-report-actions" style="justify-content:flex-start; margin-bottom:1.25rem;">
+          <button type="button" class="nav-btn nav-btn-cta" id="personnel-dashboard-refresh" style="margin:0;">Refresh Tasks</button>
+        </div>
+        <div id="personnel-tasks-empty" class="user-empty-state">No tasks are assigned to you right now.</div>
+        <div id="personnel-tasks-list" class="personnel-board"></div>
+      </section>
+
+      <aside class="user-dashboard-side">
+        <section class="user-panel">
+          <div class="user-panel-head">
+            <h3>Account Summary</h3>
+          </div>
+          <div class="latest-report-details">
+            <div class="latest-report-row">
+              <span>Name</span>
+              <strong id="personnel-summary-name">-</strong>
+            </div>
+            <div class="latest-report-row">
+              <span>Email</span>
+              <strong id="personnel-summary-email">-</strong>
+            </div>
+            <div class="latest-report-row">
+              <span>Team</span>
+              <strong id="personnel-summary-team">-</strong>
+            </div>
+            <div class="latest-report-row">
+              <span>Last Login</span>
+              <strong id="personnel-summary-last-login">-</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="user-panel">
+          <div class="user-panel-head">
+            <h3>Assignment Alerts</h3>
+          </div>
+          <div id="personnel-alerts-empty" class="user-empty-state">No assignment alerts yet.</div>
+          <div id="personnel-alerts-list" class="personnel-notification-list"></div>
+        </section>
+
+        <section class="user-panel">
+          <div class="user-panel-head">
+            <h3>Latest Task</h3>
+          </div>
+          <div id="personnel-latest-empty" class="user-empty-state">Waiting for your first assigned task.</div>
+          <div id="personnel-latest-card" class="latest-report-card" hidden>
+            <div class="latest-report-queue">
+              <span>Queue Number</span>
+              <strong id="personnel-latest-queue">Pending</strong>
+            </div>
+            <div class="latest-report-details">
+              <div class="latest-report-row">
+                <span>Issue</span>
+                <strong id="personnel-latest-issue">-</strong>
+              </div>
+              <div class="latest-report-row">
+                <span>Location</span>
+                <strong id="personnel-latest-location">-</strong>
+              </div>
+              <div class="latest-report-row">
+                <span>Status</span>
+                <strong id="personnel-latest-status">-</strong>
+              </div>
+              <div class="latest-report-row">
+                <span>Updated</span>
+                <strong id="personnel-latest-time">-</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <div id="personnel-assignment-toast" class="personnel-toast" hidden>
+    <div class="personnel-toast-card" role="status" aria-live="polite" aria-atomic="true">
+      <div class="personnel-toast-kicker">New Task</div>
+      <div class="personnel-toast-message" id="personnel-assignment-toast-message">A new task was assigned to you.</div>
+      <button type="button" class="personnel-toast-close" id="personnel-assignment-toast-close">Close</button>
+    </div>
+  </div>
+
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/personnel-dashboard.js"></script>
+</body>
+</html>

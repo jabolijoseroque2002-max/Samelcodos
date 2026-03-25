@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Management - SAMELCO II</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <script src="../js/supabase-config.js"></script>
+</head>
+<body class="page-teams">
+  <div class="bg-image" aria-hidden="true"></div>
+  <div class="noise"></div>
+  <div class="orb orb-1"></div>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="dashboard.html" class="nav-logo">
+        <span class="nav-logo-icon" aria-hidden="true">
+          <img src="../assets/images/logo.png" alt="SAMELCO II logo" class="nav-logo-img">
+        </span>
+        <span class="nav-logo-text">
+          <span class="nav-logo-title">SAMELCO II</span>
+          <span class="nav-logo-sub">SAMAR ELECTRIC COOPERATIVE, INC.</span>
+        </span>
+      </a>
+      <div class="nav-right">
+        <div class="nav-links">
+          <a href="dashboard.html" class="nav-link">Home</a>
+          <a href="records.html" class="nav-link">Records</a>
+          <a href="analytics.html" class="nav-link">Analytics</a>
+          <a href="teams.html" class="nav-link" aria-current="page">Teams</a>
+          <a href="contact.html" class="nav-link">Contact</a>
+          <a href="about.html" class="nav-link">About</a>
+        </div>
+        <span class="nav-user-welcome">Welcome, <span id="user-name">User</span></span>
+        <button type="button" class="nav-btn nav-btn-cta" id="logout-btn">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <section class="records-section">
+    <div class="records-container">
+      <div class="records-banner">
+        <div class="records-banner-text">
+          <h1 class="records-banner-title">Team Management</h1>
+          <p class="records-banner-sub"></p>
+        </div>
+        <div class="records-banner-actions">
+          <button type="button" class="nav-btn nav-btn-cta" id="add-team-btn">+ Add New Team</button>
+        </div>
+      </div>
+
+      <div class="team-filters">
+        <div class="team-search-wrap">
+          <input type="text" id="team-search" placeholder="Search team name..." class="records-filter-input">
+        </div>
+        <div class="team-filter-buttons">
+          <span class="filter-label">Filter by:</span>
+          <button type="button" class="team-filter-btn is-active" data-filter="all">All</button>
+          <button type="button" class="team-filter-btn" data-filter="available">Available</button>
+          <button type="button" class="team-filter-btn" data-filter="unavailable">Unavailable</button>
+        </div>
+      </div>
+
+      <div class="team-stats-bar">
+        <div class="team-stat-item">
+          <span class="team-stat-val" id="total-teams-count">0</span>
+          <span class="team-stat-lab">Total Teams</span>
+        </div>
+        <div class="team-stat-item">
+          <span class="team-stat-val" id="available-teams-count">0</span>
+          <span class="team-stat-lab">Available</span>
+        </div>
+        <div class="team-stat-item">
+          <span class="team-stat-val" id="busy-teams-count">0</span>
+          <span class="team-stat-lab">On Mission</span>
+        </div>
+      </div>
+
+      <div class="teams-dashboard-grid" id="teams-grid">
+        <!-- Team Cards will be loaded here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Add Team Modal -->
+  <div id="team-modal" class="modal modal-overlay" style="display:none; position:fixed; z-index:10000; left:0; top:0; width:100%; height:100%;">
+    <div class="modal-content modal-content-styled" style="background:#fff; margin:8% auto; padding:2rem; border-radius:16px; width:92%; max-width:520px;">
+      <h2 style="margin-top:0; color:#8b2a2a; font-family:'Outfit', sans-serif; font-weight:700;">Add New Team</h2>
+      <div style="margin-top:1.5rem;">
+        <label for="new-team-name" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#475569;">Team Name</label>
+        <input type="text" id="new-team-name" class="form-input" style="width:100%; padding:0.75rem; border:2px solid #e2e8f0; border-radius:10px; font-family:inherit;" placeholder="e.g. Line Crew C">
+      </div>
+      <div style="margin-top:1rem;">
+        <label for="new-team-description" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#475569;">Description <span style="font-weight:400; color:#94a3b8;">(optional)</span></label>
+        <textarea id="new-team-description" class="form-input" rows="3" style="width:100%; padding:0.75rem; border:2px solid #e2e8f0; border-radius:10px; font-family:inherit; resize:vertical;" placeholder="Short summary of what this team handles"></textarea>
+      </div>
+      <div style="margin-top:1rem;">
+        <label for="new-team-dashboard-email" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#475569;">Dashboard Email</label>
+        <input type="email" id="new-team-dashboard-email" class="form-input" style="width:100%; padding:0.75rem; border:2px solid #e2e8f0; border-radius:10px; font-family:inherit;" placeholder="team@example.com">
+      </div>
+      <div style="margin-top:1rem;">
+        <label for="new-team-dashboard-password" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#475569;">Dashboard Password</label>
+        <input type="password" id="new-team-dashboard-password" class="form-input" style="width:100%; padding:0.75rem; border:2px solid #e2e8f0; border-radius:10px; font-family:inherit;" placeholder="Minimum 8 characters">
+      </div>
+      <div style="margin-top:1rem;">
+        <label for="new-team-dashboard-confirm-password" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#475569;">Confirm Password</label>
+        <input type="password" id="new-team-dashboard-confirm-password" class="form-input" style="width:100%; padding:0.75rem; border:2px solid #e2e8f0; border-radius:10px; font-family:inherit;" placeholder="Re-enter the password">
+      </div>
+      <p style="margin:1rem 0 0; font-size:0.9rem; line-height:1.5; color:#64748b;">This email and password will be used by the team to log in to its own dashboard.</p>
+      <div style="margin-top:2rem; display:flex; gap:1rem; justify-content:flex-end;">
+        <button type="button" id="cancel-team-btn" class="team-btn team-btn-toggle">Cancel</button>
+        <button type="button" id="save-team-btn" class="nav-btn nav-btn-cta" style="margin:0; height:42px; padding:0 1.5rem;">Save Team</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team Info Modal -->
+  <div id="info-modal" class="modal modal-overlay" style="display:none; position:fixed; z-index:10001; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.6);">
+    <div class="modal-content modal-content-styled" style="background:#fff; margin:8% auto; padding:2.5rem; border-radius:24px; width:95%; max-width:500px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); border:1px solid rgba(139,42,42,0.1);">
+      <div style="text-align:center; margin-bottom:1.5rem;">
+        <h2 id="info-title" style="margin:0; color:#8b2a2a; font-family:'Outfit', sans-serif; font-weight:700; font-size:1.75rem;">Team Info</h2>
+        <p id="info-subtitle" style="margin:0.5rem 0 0; color:#64748b; font-weight:500; font-size:1rem;"></p>
+      </div>
+      
+      <div style="background:#f8fafc; padding:1.5rem; border-radius:16px; border:1px solid #e2e8f0; margin-bottom:1.5rem;">
+        <h3 style="margin:0 0 0.75rem; font-size:1rem; color:#1e293b; font-weight:600;">Main Responsibilities:</h3>
+        <ul id="info-handles-list" style="margin:0; padding-left:1.5rem; color:#475569; line-height:1.6; font-size:0.95rem;">
+          <!-- List items will be added here -->
+        </ul>
+      </div>
+
+      <p id="info-note" style="background:#fff7ed; color:#c2410c; padding:1rem; border-radius:12px; border:1px solid #ffedd5; font-size:0.9rem; font-weight:500; display:none;"></p>
+      
+      <div style="margin-top:2rem; text-align:center;">
+        <button type="button" id="close-info-btn" class="nav-btn nav-btn-cta" style="margin:0; padding:0.75rem 2.5rem; width:100%;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mission Assignment Modal -->
+  <div id="mission-modal" class="modal modal-overlay" style="display:none; position:fixed; z-index:10002; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.6);">
+    <div class="modal-content modal-content-styled" style="background:#fff; margin:5% auto; padding:2rem; border-radius:24px; width:95%; max-width:600px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); border:1px solid rgba(139,42,42,0.1); max-height:85vh; overflow-y:auto;">
+      <div style="text-align:center; margin-bottom:1.5rem;">
+        <h2 id="mission-modal-title" style="margin:0; color:#8b2a2a; font-family:'Outfit', sans-serif; font-weight:700; font-size:1.75rem;">Active Missions</h2>
+        <p id="mission-modal-subtitle" style="margin:0.5rem 0 0; color:#64748b; font-weight:500; font-size:1rem;">Manage team assignments</p>
+      </div>
+      <div style="display:flex; justify-content:flex-end; margin-bottom:1rem;">
+        <button type="button" id="mission-add-personnel-btn" class="nav-btn nav-btn-cta" style="margin:0;">+ Add Personnel</button>
+      </div>
+      
+      <div id="mission-list" style="display:flex; flex-direction:column; gap:1rem; margin-bottom:1.5rem;">
+        <!-- Mission items will be added here -->
+      </div>
+
+      <div style="text-align:center;">
+        <button type="button" id="close-mission-btn" class="nav-btn nav-btn-cta" style="margin:0; padding:0.75rem 2.5rem; width:100%;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Personnel Management Modal -->
+  <div id="personnel-modal" class="modal modal-overlay" style="display:none; position:fixed; z-index:10003; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.6);">
+    <div class="modal-content modal-content-styled" style="background:#fff; margin:8% auto; padding:2rem; border-radius:20px; width:94%; max-width:520px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); border:1px solid rgba(139,42,42,0.1);">
+      <div style="margin-bottom:1.25rem;">
+        <h2 style="margin:0; color:#8b2a2a; font-family:'Outfit', sans-serif; font-weight:700;">Add Personnel</h2>
+        <p id="personnel-modal-team-label" style="margin:0.4rem 0 0; color:#64748b;">Create a personnel account for this team.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:1rem;">
+        <div>
+          <label for="personnel-name-input" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#475569;">Full Name</label>
+          <input type="text" id="personnel-name-input" class="form-input" style="width:100%; padding:0.75rem; border:2px solid #e2e8f0; border-radius:10px; font-family:inherit;" placeholder="Enter personnel full name">
+        </div>
+        <div>
+          <label for="personnel-email-input" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#475569;">Email</label>
+          <input type="email" id="personnel-email-input" class="form-input" style="width:100%; padding:0.75rem; border:2px solid #e2e8f0; border-radius:10px; font-family:inherit;" placeholder="personnel@example.com">
+        </div>
+        <div>
+          <label for="personnel-password-input" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#475569;">Password</label>
+          <input type="password" id="personnel-password-input" class="form-input" style="width:100%; padding:0.75rem; border:2px solid #e2e8f0; border-radius:10px; font-family:inherit;" placeholder="Minimum 8 characters">
+        </div>
+        <div>
+          <label for="personnel-confirm-password-input" style="display:block; margin-bottom:0.5rem; font-weight:600; color:#475569;">Confirm Password</label>
+          <input type="password" id="personnel-confirm-password-input" class="form-input" style="width:100%; padding:0.75rem; border:2px solid #e2e8f0; border-radius:10px; font-family:inherit;" placeholder="Re-enter password">
+        </div>
+      </div>
+      <div style="margin-top:1.5rem; display:flex; justify-content:flex-end; gap:0.75rem;">
+        <button type="button" id="cancel-personnel-btn" class="team-btn team-btn-toggle">Cancel</button>
+        <button type="button" id="save-personnel-btn" class="nav-btn nav-btn-cta" style="margin:0;">Save Personnel</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .team-card {
+      background: rgba(255, 255, 255, 0.9);
+    }
+    .team-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    .team-info-btn {
+      background: rgba(139, 42, 42, 0.1);
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .team-info-btn:hover {
+      background: rgba(139, 42, 42, 0.2);
+      transform: scale(1.1);
+    }
+    .modal-content-styled {
+      animation: modalSlideIn 0.3s ease-out;
+    }
+    @keyframes modalSlideIn {
+      from { transform: translateY(-30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Mission Item Styles */
+    .mission-item {
+      background: #f8fafc;
+      padding: 1.25rem;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .mission-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .mission-queue {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #8b2a2a;
+      background: rgba(139, 42, 42, 0.1);
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+    }
+    .mission-issue {
+      font-weight: 600;
+      color: #1e293b;
+      margin: 0.25rem 0;
+    }
+    .mission-location {
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+    .mission-assigned-to {
+      font-size: 0.85rem;
+      margin-top: 0.25rem;
+      color: #475569;
+    }
+    .mission-assigned-to strong {
+      color: #0f172a;
+    }
+    .mission-assigned-summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: 0.35rem;
+    }
+    .mission-assigned-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.28rem 0.7rem;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .mission-assigned-chip.is-done {
+      background: #dcfce7;
+      color: #15803d;
+    }
+    .mission-assign-wrap {
+      margin-top: 0.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .mission-assign-input,
+    .mission-assign-select {
+      flex: 1;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      min-width: 180px;
+      background: #fff;
+    }
+    .mission-assign-checklist {
+      display: grid;
+      gap: 0.55rem;
+      flex: 1 1 100%;
+    }
+    .mission-assign-empty {
+      background: #fff7ed;
+      border: 1px dashed #fdba74;
+      border-radius: 10px;
+      color: #9a3412;
+      padding: 0.8rem 0.95rem;
+      font-size: 0.88rem;
+    }
+    .mission-assign-option {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.72rem 0.85rem;
+      border: 1px solid #dbe4f0;
+      border-radius: 10px;
+      background: #fff;
+    }
+    .mission-assign-option.is-done {
+      border-color: #86efac;
+      background: #f0fdf4;
+    }
+    .mission-assign-checkbox {
+      margin: 0;
+      width: 1rem;
+      height: 1rem;
+    }
+    .mission-assign-option-name {
+      flex: 1;
+      color: #0f172a;
+      font-weight: 600;
+    }
+    .mission-assign-option-state {
+      border-radius: 999px;
+      padding: 0.25rem 0.65rem;
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+    .mission-assign-option-state.is-done {
+      background: #dcfce7;
+      color: #15803d;
+    }
+    .mission-save-btn {
+      background: #8b2a2a;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .mission-save-btn:hover {
+      opacity: 0.9;
+    }
+    .mission-add-personnel-btn {
+      background: rgba(139, 42, 42, 0.08);
+      color: #8b2a2a;
+      border: 1px solid rgba(139, 42, 42, 0.18);
+      border-radius: 8px;
+      padding: 0.5rem 0.9rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .mission-add-personnel-btn:hover {
+      background: rgba(139, 42, 42, 0.14);
+    }
+    .team-assignment-info {
+      cursor: pointer;
+      transition: all 0.2s;
+      padding: 0.5rem;
+      border-radius: 8px;
+      margin: 0.5rem -0.5rem;
+    }
+    .team-assignment-info:hover {
+      background: rgba(139, 42, 42, 0.05);
+      color: #8b2a2a;
+    }
+  </style>
+
+  <footer class="main-footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <a href="dashboard.html" class="footer-logo">
+          <img src="../assets/images/logo.png" alt="SAMELCO II logo" class="footer-logo-img">
+          <div class="footer-logo-text">
+            <span class="footer-logo-title">SAMELCO II</span>
+            <span class="footer-logo-sub">SAMAR ELECTRIC COOPERATIVE, INC.</span>
+          </div>
+        </a>
+        <p>Providing reliable and sustainable electric service to the province of Samar. Dedicated to empowering communities through energy.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="dashboard.html">Home Dashboard</a></li>
+          <li><a href="records.html">Consumer Records</a></li>
+          <li><a href="analytics.html">Data Analytics</a></li>
+          <li><a href="teams.html">Team Management</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact Support</a></li>
+          <li><a href="report.html">Report an Issue</a></li>
+        </ul>
+      </div>
+      <div class="footer-contact">
+        <h4>Contact Us</h4>
+        <div class="footer-contact-info">
+          <div class="footer-contact-item">
+            <span class="footer-contact-icon">📍</span>
+            <span>Paranas, Samar, Philippines</span>
+          </div>
+          <div class="footer-contact-item">
+            <span class="footer-contact-icon">📞</span>
+            <span>+63 (055) 123-4567</span>
+          </div>
+          <div class="footer-contact-item">
+            <span class="footer-contact-icon">✉️</span>
+            <span>support@samelcodos.ph</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">
+        &copy; 2026 SAMELCO II. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <button type="button" class="back-to-top" id="back-to-top" title="Back to Top">
+    <span>↑</span>
+  </button>
+
+  <script src="../js/teams.js"></script>
+  <script>
+    // Back to Top functionality
+    const backToTopBtn = document.getElementById('back-to-top');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        backToTopBtn.classList.add('visible');
+      } else {
+        backToTopBtn.classList.remove('visible');
+      }
+    });
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self' https://tujouacwrtozuqnunizm.supabase.co https://nominatim.openstreetmap.org;">
+  <title>User Dashboard - SAMELCO II</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="page-user-dashboard">
+  <div class="bg-image" aria-hidden="true"></div>
+  <div class="noise"></div>
+  <div class="orb orb-1"></div>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="nav-logo-icon" aria-hidden="true">
+          <img src="../assets/images/logo.png" alt="SAMELCO II logo" class="nav-logo-img">
+        </span>
+        <span class="nav-logo-text">
+          <span class="nav-logo-title">SAMELCO II</span>
+          <span class="nav-logo-sub">SAMAR ELECTRIC COOPERATIVE, INC.</span>
+        </span>
+      </a>
+      <div class="nav-right">
+        <a href="index.html" class="nav-btn">Home</a>
+        <button type="button" class="nav-btn" id="user-dashboard-logout" hidden>Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="user-dashboard-main">
+    <section class="user-hero">
+      <div class="user-hero-copy">
+        <p class="user-hero-kicker">User Dashboard</p>
+        <h1>Welcome, <span id="user-dashboard-name">Guest</span>.</h1>
+        <p class="user-hero-subtitle">Report brownouts, unstable voltage, damaged lines, and service faults from one place. Capture your GPS so the SAMELCO II team receives the exact location faster.</p>
+        <div class="user-hero-actions">
+          <a href="#report-problem" class="nav-btn nav-btn-report">Report a Problem</a>
+        </div>
+      </div>
+      <div class="user-hero-stats">
+        <article class="user-stat-card">
+          <span class="user-stat-label">Availability</span>
+          <strong>24/7</strong>
+          <p>Send a problem report any time from this dashboard.</p>
+        </article>
+        <article class="user-stat-card">
+          <span class="user-stat-label">Location</span>
+          <strong>GPS-Based</strong>
+          <p>Your municipality and barangay are matched using your current position.</p>
+        </article>
+        <article class="user-stat-card">
+          <span class="user-stat-label">Priority</span>
+          <strong>Queue Number</strong>
+          <p>Each successful report returns the queue number from the database.</p>
+        </article>
+        <article class="user-stat-card">
+          <span class="user-stat-label">Purpose</span>
+          <strong>Direct Reporting</strong>
+          <p>The dashboard is focused on one task: reporting electricity problems.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="user-dashboard-grid">
+      <section class="user-panel user-panel-form" id="report-problem">
+        <div class="user-panel-headline">
+          <p class="user-panel-kicker">Main Action</p>
+          <h2>Report Problem</h2>
+          <p>Complete the form below to submit an electricity issue with your exact location.</p>
+        </div>
+
+        <div class="auth-card report-auth-card user-report-card" style="max-width:none;">
+          <form id="report-form" class="user-report-form">
+            <div class="input-wrap">
+              <input type="text" id="report-name" placeholder=" " required>
+              <label for="report-name">Full Name</label>
+            </div>
+            <div class="input-wrap">
+              <input type="text" id="report-contact" placeholder=" " required>
+              <label for="report-contact">Account Number / Contact Number</label>
+            </div>
+            <div class="user-report-grid">
+              <div class="input-wrap">
+                <select id="report-municipality" required>
+                  <option value="" selected disabled hidden></option>
+                </select>
+                <label for="report-municipality">Municipality</label>
+              </div>
+              <div class="input-wrap">
+                <select id="report-barangay" required disabled>
+                  <option value="" selected disabled hidden></option>
+                </select>
+                <label for="report-barangay">Barangay</label>
+              </div>
+            </div>
+            <div class="input-wrap">
+              <input type="text" id="report-location" placeholder=" " required>
+              <label for="report-location">Street / Purok / Landmark</label>
+            </div>
+            <div class="input-wrap">
+              <select id="report-issue" required>
+                <option value="" selected disabled hidden></option>
+                <option>Power outages / Brownout / pagkawala ng kuryente</option>
+                <option>Frequent tripping of circuit breakers / Madalas na pag-trip ng circuit breaker</option>
+                <option>Flickering lights / Kumukutitap na ilaw</option>
+                <option>Electrical shocks / Pagkakuryente / electrical shock</option>
+                <option>Overloaded circuits / Sobrang load sa circuit</option>
+                <option>Dead outlets / Patay na saksakan / outlet</option>
+                <option>High electricity bills / Mataas na singil sa kuryente</option>
+                <option>Short circuits / Short circuit</option>
+                <option>Burning smell or sparks from outlets / Amoy sunog o spark sa saksakan</option>
+                <option>Voltage fluctuations / surges / Pag-fluctuate / pagtaas-baba ng boltahe</option>
+              </select>
+              <label for="report-issue">Issue Type</label>
+            </div>
+            <div class="input-wrap input-wrap-textarea">
+              <textarea id="report-description" placeholder=" " rows="4"></textarea>
+              <label for="report-description">Additional Details (Optional)</label>
+            </div>
+            <div class="user-report-grid user-report-grid-tight">
+              <div class="input-wrap consent-wrap user-consent-block">
+                <label class="consent-label">
+                  <input type="checkbox" id="report-urgent">
+                  <span>Mark as Urgent</span>
+                </label>
+              </div>
+              <div class="user-gps-strip">
+                <button type="button" class="btn" id="capture-gps-btn">Capture GPS</button>
+                <span id="gps-status">GPS not captured yet</span>
+              </div>
+            </div>
+            <div class="input-wrap consent-wrap user-consent-card">
+              <label class="consent-label">
+                <input type="checkbox" id="report-consent" required>
+                <span>I consent to the collection and processing of my personal data for the purpose of resolving this electricity issue.</span>
+              </label>
+              <details id="privacy-notice">
+                <summary>Privacy Notice</summary>
+                <p>We collect your name, account number, location, issue details, and GPS coordinates to dispatch crews and resolve outages. Data are retained only as necessary for operations and reporting.</p>
+              </details>
+            </div>
+
+            <input type="hidden" id="report-lat">
+            <input type="hidden" id="report-lng">
+
+            <div class="user-report-actions">
+              <button type="submit" class="btn btn-primary">Submit Report</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <aside class="user-dashboard-side">
+        <section class="user-panel">
+          <div class="user-panel-head">
+            <h3>Latest Report</h3>
+            <span class="user-status-pill" id="latest-report-status">Pending</span>
+          </div>
+          <div id="latest-report-empty" class="user-empty-state">No report has been submitted from this browser yet.</div>
+          <div id="latest-report-card" class="latest-report-card" hidden>
+            <div class="latest-report-queue">
+              <span>Queue Number</span>
+              <strong id="latest-report-queue">Pending</strong>
+            </div>
+            <div class="latest-report-details">
+              <div class="latest-report-row">
+                <span>Issue</span>
+                <strong id="latest-report-issue">-</strong>
+              </div>
+              <div class="latest-report-row">
+                <span>Location</span>
+                <strong id="latest-report-location">-</strong>
+              </div>
+              <div class="latest-report-row">
+                <span>Submitted</span>
+                <strong id="latest-report-time">-</strong>
+              </div>
+              <div class="latest-report-row">
+                <span>Assigned Team</span>
+                <strong id="latest-report-team">Not assigned yet</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="user-panel">
+          <div class="user-panel-head">
+            <h3>How It Works</h3>
+          </div>
+          <ol class="user-step-list">
+            <li>Tap <strong>Capture GPS</strong> so your municipality and barangay can be matched.</li>
+            <li>Complete the location and issue details.</li>
+            <li>Submit the form and wait for the queue number confirmation.</li>
+            <li>Your report appears in the operations dashboard for SAMELCO II staff.</li>
+          </ol>
+        </section>
+
+        <section class="user-panel user-help-panel">
+          <div class="user-panel-head">
+            <h3>Need Help Fast?</h3>
+          </div>
+          <p>For urgent electrical hazards, include complete location details and mark the report as urgent.</p>
+          <div class="user-help-list">
+            <span>Email: support@samelcodos.ph</span>
+            <span>Phone: (056) 123-4567</span>
+            <span>Office Hours: Mon-Fri, 8:00 AM-5:00 PM</span>
+          </div>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <div id="user-onway-toast" class="user-onway-toast" hidden>
+    <div class="user-onway-toast-card" role="status" aria-live="polite" aria-atomic="true">
+      <div class="user-onway-toast-kicker">Team Update</div>
+      <div class="user-onway-toast-message" id="user-onway-toast-message">Inspection is on the way to your location.</div>
+      <button type="button" class="user-onway-toast-close" id="user-onway-toast-close">Close</button>
+    </div>
+  </div>
+
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/municipalities-data.js"></script>
+  <script src="../js/report.js"></script>
+  <script src="../js/user-dashboard.js"></script>
+</body>
+</html>

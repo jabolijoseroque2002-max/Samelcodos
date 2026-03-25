@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self' https://tujouacwrtozuqnunizm.supabase.co https://nominatim.openstreetmap.org;">
+  <title>Report Issue SAMELCO II</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="page-records">
+  <div class="bg-image" aria-hidden="true"></div>
+  <div class="noise"></div>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="nav-logo-icon" aria-hidden="true">
+          <img src="../assets/images/logo.png" alt="SAMELCO II logo" class="nav-logo-img">
+        </span>
+        <span class="nav-logo-text">
+          <span class="nav-logo-title">SAMELCO II</span>
+          <span class="nav-logo-sub">SAMAR ELECTRIC COOPERATIVE, INC.</span>
+        </span>
+      </a>
+      <div class="nav-right">
+        <a href="user-dashboard.html" class="nav-btn nav-btn-cta">User Dashboard</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="records-section">
+    <div class="records-container" style="max-width:820px;">
+      <div class="records-header">
+        <h1 class="records-title">Electricity Problem Report</h1>
+        <p class="records-subtitle">Submit outages, faults, line damage, transformer issues, or unstable voltage.</p>
+      </div>
+
+      <div class="auth-card report-auth-card" style="max-width:none;">
+        <form id="report-form">
+          <div class="input-wrap">
+            <input type="text" id="report-name" placeholder=" " required>
+            <label for="report-name">Full Name</label>
+          </div>
+          <div class="input-wrap">
+            <input type="text" id="report-contact" placeholder=" " required>
+            <label for="report-contact">Account Number</label>
+          </div>
+          <div class="input-wrap">
+            <select id="report-municipality" required>
+              <option value="" selected disabled hidden></option>
+            </select>
+            <label for="report-municipality">Municipality</label>
+          </div>
+          <div class="input-wrap">
+            <select id="report-barangay" required disabled>
+              <option value="" selected disabled hidden></option>
+            </select>
+            <label for="report-barangay">Barangay</label>
+          </div>
+          <div class="input-wrap">
+            <input type="text" id="report-location" placeholder=" " required>
+            <label for="report-location">Street / Purok / Landmark</label>
+          </div>
+          <div class="input-wrap">
+            <select id="report-issue" required>
+              <option value="" selected disabled hidden></option>
+              <option>Power outages / Brownout / pagkawala ng kuryente</option>
+              <option>Frequent tripping of circuit breakers / Madalas na pag-trip ng circuit breaker</option>
+              <option>Flickering lights / Kumukutitap na ilaw</option>
+              <option>Electrical shocks / Pagkakuryente / electrical shock</option>
+              <option>Overloaded circuits / Sobrang load sa circuit</option>
+              <option>Dead outlets / Patay na saksakan / outlet</option>
+              <option>High electricity bills / Mataas na singil sa kuryente</option>
+              <option>Short circuits / Short circuit</option>
+              <option>Burning smell or sparks from outlets / Amoy sunog o spark sa saksakan</option>
+              <option>Voltage fluctuations / surges / Pag-fluctuate / pagtaas-baba ng boltahe</option>
+            </select>
+            <label for="report-issue">Issue Type</label>
+          </div>
+          <div class="input-wrap consent-wrap" style="padding:0.55rem 0.8rem;">
+            <label class="consent-label" style="display:flex; gap:0.55rem; align-items:center; margin:0;">
+              <input type="checkbox" id="report-urgent">
+              <span>Mark as Urgent</span>
+            </label>
+          </div>
+          <div class="input-wrap consent-wrap" style="margin-top:0.5rem;">
+            <label class="consent-label" style="display:flex; gap:0.5rem; align-items:flex-start;">
+              <input type="checkbox" id="report-consent" required style="margin-top:0.3rem;">
+              <span>I consent to the collection and processing of my personal data for the purpose of resolving this electricity issue. I have read the <a href="#privacy-notice" style="text-decoration:underline;">Privacy Notice</a>.</span>
+            </label>
+            <details id="privacy-notice" style="margin-top:0.5rem;">
+              <summary>Privacy Notice</summary>
+              <p style="margin-top:0.4rem; line-height:1.35;">We collect your name, account number, location, issue details, and GPS coordinates to dispatch crews and resolve outages. Data are stored securely and retained only as long as necessary for operations and reporting, then archived or deleted per policy. For requests (access/correction/deletion), contact the SAMELCO II Data Protection Officer.</p>
+            </details>
+          </div>
+
+          <div style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:0.25rem;">
+            <button type="button" class="btn" id="capture-gps-btn" style="max-width:220px;">Capture GPS</button>
+            <span id="gps-status" style="align-self:center; color:#111111; font-size:0.9rem;">GPS not captured yet</span>
+          </div>
+
+          <input type="hidden" id="report-lat">
+          <input type="hidden" id="report-lng">
+
+          <div style="margin-top:1rem;">
+            <button type="submit" class="btn btn-primary">Submit Report</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/municipalities-data.js"></script>
+  <script src="../js/report.js"></script>
+</body>
+</html>
