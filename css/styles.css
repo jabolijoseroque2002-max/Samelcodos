@@ -628,6 +628,18 @@ body.page-about .nav {
   background: linear-gradient(135deg, #059669 0%, #34d399 100%);
 }
 
+.nav-burger.is-active span:nth-child(1) {
+  transform: rotate(45deg) translate(0.35rem, 0.35rem);
+}
+
+.nav-burger.is-active span:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-burger.is-active span:nth-child(3) {
+  transform: rotate(-45deg) translate(0.35rem, -0.35rem);
+}
+
 @media (max-width: 1024px) {
   .map-content-wrapper {
     flex-direction: column;
@@ -2900,6 +2912,141 @@ body.page-about .nav {
 .footer-social-link:hover {
   color: #ffd000;
   transform: translateY(-3px);
+}
+
+/* ---- Mobile Menu / Burger ---- */
+.nav-burger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 2rem;
+  height: 2rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 11;
+}
+
+.nav-burger span {
+  width: 2rem;
+  height: 0.25rem;
+  background: #1a1512;
+  border-radius: 10px;
+  transition: all 0.3s linear;
+  position: relative;
+  transform-origin: 1px;
+}
+
+@media (max-width: 1024px) {
+  .nav-burger {
+    display: flex;
+  }
+
+  /* Hide original triggers and buttons if they exist */
+  .nav-menu-trigger, .nav-buttons {
+    display: none !important;
+  }
+
+  .nav-links {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 280px;
+    background: #ffffff;
+    flex-direction: column;
+    padding: 5rem 2rem;
+    box-shadow: -4px 0 15px rgba(0,0,0,0.1);
+    z-index: 10;
+  }
+
+  .nav-links.is-active {
+    display: flex;
+  }
+
+  .nav-links .nav-link, 
+  .nav-links .nav-btn {
+    font-size: 1.1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    width: 100%;
+    color: #1a1512;
+    background: transparent;
+    justify-content: flex-start;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .nav-user-welcome {
+    display: none;
+  }
+
+  .main-container {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .showcase-panel {
+    width: 100% !important;
+    height: 300px !important;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+  }
+
+  .login-panel {
+    width: 100% !important;
+    padding: 1.5rem !important;
+  }
+
+  .auth-tabs {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .auth-tabs .tab {
+    flex: 1 1 calc(50% - 0.5rem);
+    font-size: 0.85rem;
+    padding: 0.6rem;
+  }
+
+  .map-content-wrapper {
+    flex-direction: column;
+  }
+
+  .municipalities-panel {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 400px;
+    position: relative !important;
+    border-left: none !important;
+    border-top: 1px solid rgba(0,0,0,0.1);
+  }
+
+  .map-wrapper {
+    height: 50vh !important;
+  }
+
+  .notif-dropdown {
+    width: 90vw;
+    right: -50px;
+  }
+
+  /* User Dashboard Grid */
+  .user-dashboard-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .user-hero {
+    padding: 2rem 1rem !important;
+    text-align: center;
+  }
+
+  .user-hero-stats {
+    grid-template-columns: 1fr !important;
+    margin-top: 2rem;
+  }
 }
 
 /* Back to Top */

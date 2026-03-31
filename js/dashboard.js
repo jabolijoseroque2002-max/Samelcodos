@@ -35,6 +35,16 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // Mobile Menu Logic
+  var navBurger = document.getElementById('nav-burger');
+  var navLinks = document.querySelector('.nav-links');
+  if (navBurger && navLinks) {
+    navBurger.addEventListener('click', function() {
+      navLinks.classList.toggle('is-active');
+      navBurger.classList.toggle('is-active');
+    });
+  }
+
   function getUserRole() {
     try { return localStorage.getItem('userRole') || 'viewer'; } catch(e){ return 'viewer'; }
   }
