@@ -332,11 +332,11 @@ document.addEventListener('DOMContentLoaded', function () {
       var row = document.createElement('div');
       row.className = 'analytics-table-row';
       row.innerHTML =
-        '<span>' + r.muni + '</span>' +
-        '<span>' + String(r.stats.reports) + '</span>' +
-        '<span>' + String(r.stats.active) + '</span>' +
-        '<span>' + String(r.stats.resolved) + '</span>' +
-        '<span>' + String(r.stats.overdue) + '</span>';
+        '<span data-label="Municipality">' + r.muni + '</span>' +
+        '<span data-label="Total">' + String(r.stats.reports) + '</span>' +
+        '<span data-label="Active">' + String(r.stats.active) + '</span>' +
+        '<span data-label="Resolved">' + String(r.stats.resolved) + '</span>' +
+        '<span data-label="Overdue">' + String(r.stats.overdue) + '</span>';
       elMuniTable.appendChild(row);
     });
   }

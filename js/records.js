@@ -410,14 +410,14 @@ document.addEventListener('DOMContentLoaded', function () {
         assignedDisplay = assignedDisplay ? (assignedDisplay + ' (' + assignedPersonnel + ')') : assignedPersonnel;
       }
       
-      row.innerHTML = '<span class="col-queue">' + (queueNumber ? ('#' + queueNumber) : '-') + '</span>' +
-                      '<span class="col-date">' + date + '</span>' +
-                      '<span class="col-contact">' + contact + '</span>' +
-                      '<span class="col-name">' + name + '</span>' +
-                      '<span class="col-address">' + address + '</span>' +
-                      '<span class="col-status">' + statusText + '</span>' +
-                      '<span class="col-assigned">' + (assignedDisplay || '') + '</span>' +
-                      '<span class="col-restored status-pending">Pending</span>';
+      row.innerHTML = '<span class="col-queue" data-label="Queue No.">' + (queueNumber ? ('#' + queueNumber) : '-') + '</span>' +
+                      '<span class="col-date" data-label="Date">' + date + '</span>' +
+                      '<span class="col-contact" data-label="Account No.">' + contact + '</span>' +
+                      '<span class="col-name" data-label="Name">' + name + '</span>' +
+                      '<span class="col-address" data-label="Address">' + address + '</span>' +
+                      '<span class="col-status" data-label="Issue">' + statusText + '</span>' +
+                      '<span class="col-assigned" data-label="Assigned">' + (assignedDisplay || '') + '</span>' +
+                      '<span class="col-restored status-pending" data-label="Status">Pending</span>';
       
       // Add click listener for restoration toggle
       const restoredCell = row.querySelector('.col-restored');
