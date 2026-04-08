@@ -34,45 +34,39 @@
   </nav>
 
   <main class="user-dashboard-main">
-    <section class="user-hero">
+
       <div class="user-hero-copy">
         <p class="user-hero-kicker">User Dashboard</p>
         <h1>Welcome, <span id="user-dashboard-name">Guest</span>.</h1>
-        <p class="user-hero-subtitle">Report brownouts, unstable voltage, damaged lines, and service faults from one place. Capture your GPS so the SAMELCO II team receives the exact location faster.</p>
+        <p class="user-hero-subtitle">Report brownouts, unstable voltage, damaged lines, and service faults confidently with GPS-verified submission.</p>
         <div class="user-hero-actions">
-          <a href="#report-problem" class="nav-btn nav-btn-report">Report a Problem</a>
-        </div>
-      </div>
-      <div class="user-hero-stats">
+          <a href="#report-problem" class="nav-btn nav-btn-report">Start Report</a>
+      
+     
+      <div class="user-hero-stats user-hero-features">
         <article class="user-stat-card">
           <span class="user-stat-label">Availability</span>
-          <strong>24/7</strong>
-          <p>Send a problem report any time from this dashboard.</p>
+          <strong>24/7 access</strong>
+          <p>Submit reports anytime with fast validation and live queue tracking.</p>
         </article>
         <article class="user-stat-card">
           <span class="user-stat-label">Location</span>
-          <strong>GPS-Based</strong>
-          <p>Your municipality and barangay are matched using your current position.</p>
+          <strong>GPS-based</strong>
+          <p>Your municipality and barangay are auto-filled from your current position.</p>
         </article>
         <article class="user-stat-card">
           <span class="user-stat-label">Priority</span>
-          <strong>Queue Number</strong>
-          <p>Each successful report returns the queue number from the database.</p>
-        </article>
-        <article class="user-stat-card">
-          <span class="user-stat-label">Purpose</span>
-          <strong>Direct Reporting</strong>
-          <p>The dashboard is focused on one task: reporting electricity problems.</p>
+          <strong>Queue number</strong>
+          <p>Each valid report receives a unique ticket number for status tracking.</p>
         </article>
       </div>
-    </section>
-
+   
     <section class="user-dashboard-grid">
       <section class="user-panel user-panel-form" id="report-problem">
         <div class="user-panel-headline">
-          <p class="user-panel-kicker">Main Action</p>
+          <p class="user-panel-kicker">Quick Report</p>
           <h2>Report Problem</h2>
-          <p>Complete the form below to submit an electricity issue with your exact location.</p>
+          <p>Complete the form below to submit an electricity issue with your exact location and receive a queue number.</p>
         </div>
 
         <div class="auth-card report-auth-card user-report-card" style="max-width:none;">
@@ -84,6 +78,15 @@
             <div class="input-wrap">
               <input type="text" id="report-contact" placeholder=" " required>
               <label for="report-contact">Account Number / Contact Number</label>
+            </div>
+            <div class="input-wrap">
+              <select id="report-followup" required>
+                <option value="" selected disabled hidden></option>
+                <option>SMS updates</option>
+                <option>Phone call</option>
+                <option>Email notification</option>
+              </select>
+              <label for="report-followup">Preferred follow-up</label>
             </div>
             <div class="user-report-grid">
               <div class="input-wrap">
