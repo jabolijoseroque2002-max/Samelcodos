@@ -484,7 +484,6 @@ document.addEventListener('DOMContentLoaded', function () {
               '<div style="font-size: 2rem; margin-bottom: 0.5rem;">' + info.icon + '</div>' +
               '<h3 class="team-card-title">' + escapeHtml(team.name) + '</h3>' +
             '</div>' +
-            '<button type="button" class="team-info-btn" data-name="' + escapeHtml(team.name) + '" title="View Team Responsibilities">ℹ️</button>' +
           '</div>' +
         '</div>' +
         '<div class="team-card-badges">' +
@@ -511,12 +510,6 @@ document.addEventListener('DOMContentLoaded', function () {
           showActiveMissions(teamName);
         });
       }
-    });
-
-    document.querySelectorAll('.team-info-btn').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        showTeamInfo(btn.getAttribute('data-name'));
-      });
     });
 
     document.querySelectorAll('.toggle-status-btn').forEach(function(btn) {
