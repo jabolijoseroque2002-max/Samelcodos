@@ -534,13 +534,14 @@ document.addEventListener('DOMContentLoaded', function () {
           
           if (userEmail && typeof emailjs !== 'undefined') {
             emailjs.send(
-              'service_asz4dsz', 
-              'template_68dcpph', 
+              'service_xtzxndr', 
+              'template_3ydh5n1', 
               {
                 to_email: userEmail,
                 to_name: userName,
                 email: userEmail,
                 name: userName,
+                concern: row.issue_type,
                 issue_type: row.issue_type,
                 location: row.location_text,
                 queue_number: Number.isFinite(finalQueue) ? finalQueue : 'N/A'

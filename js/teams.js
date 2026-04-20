@@ -475,29 +475,42 @@ document.addEventListener('DOMContentLoaded', function () {
           '</div>';
       }
 
+      var emailHtml = team.dashboard_email
+        ? '<div class="team-email-row">' +
+            '<svg class="team-email-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>' +
+            '<span class="team-email-text">' + escapeHtml(team.dashboard_email) + '</span>' +
+          '</div>'
+        : '<div class="team-email-row is-empty">' +
+            '<svg class="team-email-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>' +
+            '<span class="team-email-text">No dashboard email</span>' +
+          '</div>';
+
       var info = teamInfoData[team.name] || { icon: '👥' };
 
       card.innerHTML = 
-        '<div class="team-card-header">' +
-          '<div style="display:flex; justify-content: space-between; align-items: flex-start; width: 100%;">' +
-            '<div>' +
-              '<div style="font-size: 2rem; margin-bottom: 0.5rem;">' + info.icon + '</div>' +
+        '<div class="team-card-content">' +
+          '<div class="team-card-header">' +
+            '<div class="team-icon-wrapper">' + info.icon + '</div>' +
+            '<div class="team-header-info">' +
               '<h3 class="team-card-title">' + escapeHtml(team.name) + '</h3>' +
             '</div>' +
           '</div>' +
-        '</div>' +
-        '<div class="team-card-badges">' +
-          '<span class="team-badge ' + statusClass + '">' + statusText + '</span>' +
-          '<span class="team-badge ' + availClass + '">' + availText + '</span>' +
-          '<span class="team-badge ' + dashboardBadgeClass + '">' + dashboardBadgeText + '</span>' +
-        '</div>' +
-        (isBusy ? '<div class="team-assignment-info"><span class="mission-count">' + missionCount + '</span> Active mission' + (missionCount > 1 ? 's' : '') + '</div>' : '<div class="team-assignment-info">No active missions</div>') +
-        '<div style="margin-top:0.85rem; font-size:0.92rem; color:#475569; line-height:1.5;">' +
-          (team.dashboard_email
-            ? 'Dashboard email: <strong style="color:#0f172a;">' + escapeHtml(team.dashboard_email) + '</strong>'
-            : 'Dashboard email not set yet.') +
+          
+          '<div class="team-card-badges">' +
+            '<span class="team-badge ' + statusClass + '">' + statusText + '</span>' +
+            '<span class="team-badge ' + availClass + '">' + availText + '</span>' +
+            '<span class="team-badge ' + dashboardBadgeClass + '">' + dashboardBadgeText + '</span>' +
+          '</div>' +
+          
+          '<div class="team-details-section">' +
+            (isBusy 
+              ? '<div class="team-assignment-info is-active"><div class="pulse-dot"></div><div><span class="mission-count">' + missionCount + '</span> Active mission' + (missionCount > 1 ? 's' : '') + '</div></div>' 
+              : '<div class="team-assignment-info"><svg class="idle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>No active missions</div>') +
+            emailHtml +
+          '</div>' +
         '</div>' +
         actionsHtml;
+
       
       teamsGrid.appendChild(card);
     });

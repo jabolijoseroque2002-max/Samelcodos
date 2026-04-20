@@ -542,8 +542,14 @@ document.addEventListener('DOMContentLoaded', function () {
           
           // Try to find customer user if we have a name
           if (userName) {
-            var userRes = await fetch(cfg.url + '/rest/v1/customer_users?full_name=eq.' + encodeURIComponent(userName) + '&select=email', {
-              headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
+            var userRes = await fetch(cfg.url + '/rest/v1/rpc/get_customer_email_by_name', {
+              method: 'POST',
+              headers: { 
+                'Content-Type': 'application/json',
+                apikey: cfg.anonKey, 
+                Authorization: 'Bearer ' + cfg.anonKey 
+              },
+              body: JSON.stringify({ p_full_name: userName })
             });
             if (userRes.ok) {
               var userData = await userRes.json();
@@ -567,13 +573,14 @@ document.addEventListener('DOMContentLoaded', function () {
       if (normalizedStatus === 'resolved' && typeof emailjs !== 'undefined') {
         try {
           emailjs.send(
-            'service_asz4dsz', 
-            'template_7s9y3pb', 
+            'service_xtzxndr', 
+            'template_3ydh5n1', 
             {
               to_email: userEmail || 'support@samelcodos.ph',
               to_name: userName || 'Valued Customer',
               email: userEmail || 'support@samelcodos.ph',
               name: userName || 'Valued Customer',
+              concern: issueType || 'Reported Issue',
               issue_type: issueType || 'Reported Issue',
               location: locationText || 'Your Location',
               queue_number: queueNum || 'N/A'
@@ -619,13 +626,14 @@ document.addEventListener('DOMContentLoaded', function () {
     if (normalizedStatus === 'resolved' && typeof emailjs !== 'undefined') {
       try {
         emailjs.send(
-          'service_asz4dsz', 
-          'template_7s9y3pb', 
+          'service_xtzxndr', 
+          'template_3ydh5n1', 
           {
             to_email: userEmail || 'support@samelcodos.ph',
             to_name: userName || 'Valued Customer',
             email: userEmail || 'support@samelcodos.ph',
             name: userName || 'Valued Customer',
+            concern: issueType || 'Reported Issue',
             issue_type: issueType || 'Reported Issue',
             location: locationText || 'Your Location',
             queue_number: queueNum || 'N/A'

@@ -277,8 +277,14 @@ document.addEventListener('DOMContentLoaded', function () {
             queueNum = data[0].queue_number || '';
             
             if (userName) {
-              var userRes = await fetch(cfg.url + '/rest/v1/customer_users?full_name=eq.' + encodeURIComponent(userName) + '&select=email', {
-                headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
+              var userRes = await fetch(cfg.url + '/rest/v1/rpc/get_customer_email_by_name', {
+                method: 'POST',
+                headers: { 
+                  'Content-Type': 'application/json',
+                  apikey: cfg.anonKey, 
+                  Authorization: 'Bearer ' + cfg.anonKey 
+                },
+                body: JSON.stringify({ p_full_name: userName })
               });
               if (userRes.ok) {
                 var userData = await userRes.json();
@@ -300,23 +306,31 @@ document.addEventListener('DOMContentLoaded', function () {
       // Trigger RESTORED email if EmailJS is available
       if (typeof emailjs !== 'undefined') {
         try {
+          var finalEmail = userEmail || 'support@samelcodos.ph';
+          console.log('--- EMAILJS DEBUG ---');
+          console.log('Sending email to:', finalEmail);
+          console.log('Using Name:', userName);
+
           emailjs.send(
-            'service_asz4dsz', 
-            'template_7s9y3pb', 
+            'service_xtzxndr', 
+            'template_3ydh5n1', 
             {
-              to_email: userEmail || 'support@samelcodos.ph',
+              to_email: finalEmail,
               to_name: userName || 'Valued Customer',
-              email: userEmail || 'support@samelcodos.ph',
+              email: finalEmail,
               name: userName || 'Valued Customer',
+              concern: issueType || 'Reported Issue',
               title: issueType || 'Reported Issue',
               issue_type: issueType || 'Reported Issue',
               location: locationText || 'Your Location',
               queue_number: queueNum || 'N/A'
             }
-          ).then(function() {
-            console.log('Restored email sent successfully on Mark as Done.');
+          ).then(function(response) {
+            console.log('EmailJS SUCCESS on Mark as Done!', response.status, response.text);
+            alert('Auto-reply successfully sent to: ' + finalEmail);
           }).catch(function(error) {
             console.error('Failed to send restored email:', error);
+            alert('Failed to send auto-reply to ' + finalEmail + ': ' + JSON.stringify(error));
           });
         } catch (e) {
           console.error('Error triggering EmailJS:', e);

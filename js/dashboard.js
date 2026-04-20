@@ -149,6 +149,13 @@ document.addEventListener('DOMContentLoaded', function () {
       btn.classList.add('map-popup-btn-primary');
     }
     if (sel) {
+      // Dynamically rebuild the dropdown options so the newly added team becomes disabled
+      var tempLabel = document.createElement('div');
+      tempLabel.innerHTML = buildTeamSelectLabelHtml(false, finalTeams);
+      var newSel = tempLabel.querySelector('.team-select');
+      if (newSel) {
+        sel.innerHTML = newSel.innerHTML;
+      }
       sel.value = "";
     }
     var meta = container.querySelector('.map-popup-meta-assigned');
@@ -2383,17 +2390,13 @@ document.addEventListener('DOMContentLoaded', function () {
             ev.stopPropagation();
 
             if (tgt.classList.contains('pending-assign')) {
+              var teamSelectEl = container.querySelector('.team-select');
               if (!canManage() || !teamSelectEl) return;
               var currentT = String(getAssignedTeamForRow(r) || '').trim();
               var newT = teamSelectEl.value || '';
               
               if (!newT) {
-                newT = getFirstAvailableTeam();
-                if (newT) teamSelectEl.value = newT;
-              }
-              
-              if (!newT) {
-                alert('No teams are currently available. All teams are busy with other reports.');
+                alert('Please select a team from the dropdown first before assigning.');
                 return;
               }
 
@@ -2414,6 +2417,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert(buildStatusUpdateErrorMessage(err));
                 return;
               }
+              
+              // Update local cache so subsequent additions work correctly
+              r.assigned_team = finalTeams;
+              r.assignedTeam = finalTeams;
+              
               lockPendingAssignControls(container, finalTeams);
               setActiveRouteOwner('report:' + String(r.id || ''));
               drawRouteFromAdminTo(lat, lng);
@@ -2458,7 +2466,84 @@ document.addEventListener('DOMContentLoaded', function () {
                 var nextStatus = isResolvedRow(r) ? 'pending' : 'resolved';
                 var teamForSave = getTeamForStatusUpdate(r, teamSelectEl);
                 await setReportStatusById(r.id, nextStatus, teamForSave);
-                if (String(nextStatus).toLowerCase() === 'resolved') clearRouteLine();
+                
+                if (String(nextStatus).toLowerCase() === 'resolved') {
+                  clearRouteLine();
+                  // EMAILJS LOGIC
+                  if (typeof emailjs !== 'undefined') {
+                    try {
+                      var userEmail = '';
+                      var userName = r.fullName || '';
+                      var issueType = r.issue || '';
+                      var locationText = r.location_text || (r.name + ' ' + (r.barangay || ''));
+                      var queueNum = Number.isFinite(r.queueNumber) ? r.queueNumber : 'N/A';
+
+                      try {
+                        var reportRes = await fetch(supabaseCfg.url + '/rest/v1/' + supabaseCfg.reportsTable + '?id=eq.' + encodeURIComponent(r.id) + '&select=full_name,issue_type,location_text,queue_number', {
+                          headers: { apikey: supabaseCfg.anonKey, Authorization: 'Bearer ' + supabaseCfg.anonKey }
+                        });
+                        if (reportRes.ok) {
+                          var reportData = await reportRes.json();
+                          if (reportData && reportData.length) {
+                            userName = reportData[0].full_name || userName;
+                            issueType = reportData[0].issue_type || issueType;
+                            locationText = reportData[0].location_text || locationText;
+                            queueNum = reportData[0].queue_number || queueNum;
+                          }
+                        }
+                      } catch (err) { console.error('Failed to fetch report details for email', err); }
+
+                      if (userName && userName !== 'Unknown reporter') {
+                        try {
+                          var userRes = await fetch(supabaseCfg.url + '/rest/v1/rpc/get_customer_email_by_name', {
+                            method: 'POST',
+                            headers: { 
+                              'Content-Type': 'application/json',
+                              apikey: supabaseCfg.anonKey, 
+                              Authorization: 'Bearer ' + supabaseCfg.anonKey 
+                            },
+                            body: JSON.stringify({ p_full_name: userName })
+                          });
+                          if (userRes.ok) {
+                            var userData = await userRes.json();
+                            if (userData && userData.length) {
+                              userEmail = userData[0].email;
+                            }
+                          }
+                        } catch (err) { console.error('RPC get_customer_email_by_name failed', err); }
+                      }
+                      
+                      var finalEmail = userEmail || 'support@samelcodos.ph';
+                      console.log('--- EMAILJS DEBUG ---');
+                      console.log('Sending email to:', finalEmail);
+                      console.log('Using Name:', userName);
+                      
+                      emailjs.send(
+                        'service_xtzxndr', 
+                        'template_3ydh5n1', 
+                        {
+                          to_email: finalEmail,
+                          to_name: userName || 'Valued Customer',
+                          email: finalEmail,
+                          name: userName || 'Valued Customer',
+                          concern: issueType,
+                          issue_type: issueType,
+                          location: locationText,
+                          queue_number: queueNum
+                        }
+                      ).then(function(response) {
+                        console.log('EmailJS SUCCESS!', response.status, response.text);
+                        alert('Auto-reply successfully sent to: ' + finalEmail);
+                      }).catch(function(error) {
+                        console.error('EmailJS FAILED:', error);
+                        alert('Failed to send auto-reply to ' + finalEmail + ': ' + JSON.stringify(error));
+                      });
+                    } catch (e) {
+                      console.error('Error triggering EmailJS:', e);
+                    }
+                  }
+                }
+                
                 loadReportsFromSupabase();
               } catch (err) {
                 console.error(err);
