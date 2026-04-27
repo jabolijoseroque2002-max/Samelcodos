@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var elExport = document.getElementById('analytics-export-btn');
 
   var allReports = [];
-  var perDayChart, topMuniChart, topBarangayChart;
+  var perDayChart, topMuniChart, topBarangayChart, issueTypePieChart;
 
   function setSelectOptions(selectEl, values, leadingLabel) {
     if (!selectEl) return;
@@ -439,10 +439,18 @@ document.addEventListener('DOMContentLoaded', function () {
     var values = labels.map(function(k){ return counts[k] || 0; });
     var ctx = canvas.getContext('2d');
     
-    // Create gradient
-    var gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, 'rgba(139, 42, 42, 0.85)');
-    gradient.addColorStop(1, 'rgba(139, 42, 42, 0.2)');
+    // Create multi-color palette for bars
+    var baseColors = ['#8b2a2a', '#dc2626', '#f59e0b', '#059669', '#3b82f6', '#7c3aed', '#0ea5e9', '#14b8a6', '#f97316', '#ef4444'];
+    var barColors = labels.map(function(_, i) {
+      var color = baseColors[i % baseColors.length];
+      var g = ctx.createLinearGradient(0, 0, 0, 400);
+      g.addColorStop(0, color);
+      g.addColorStop(1, 'rgba(255, 255, 255, 0.1)');
+      return g;
+    });
+    var borderColors = labels.map(function(_, i) {
+      return baseColors[i % baseColors.length];
+    });
 
     if (perDayChart) perDayChart.destroy();
     perDayChart = new Chart(ctx, {
@@ -452,13 +460,12 @@ document.addEventListener('DOMContentLoaded', function () {
         datasets: [{
           label: 'Reports',
           data: values,
-          backgroundColor: gradient,
-          borderColor: '#8b2a2a',
+          backgroundColor: barColors,
+          borderColor: borderColors,
           borderWidth: 1.5,
           borderRadius: 6,
           barPercentage: 0.7,
-          categoryPercentage: 0.7,
-          hoverBackgroundColor: '#8b2a2a'
+          categoryPercentage: 0.7
         }]
       },
       options: {
@@ -477,7 +484,7 @@ document.addEventListener('DOMContentLoaded', function () {
           },
           datalabels: {
             display: labels.length <= 45,
-            color: '#8b2a2a',
+            color: '#1a1512',
             anchor: 'end',
             align: 'top',
             offset: 4,
@@ -656,6 +663,9 @@ document.addEventListener('DOMContentLoaded', function () {
       if (canvasId === 'top-barangays-chart' && topBarangayChart && typeof topBarangayChart.toBase64Image === 'function') {
         return topBarangayChart.toBase64Image();
       }
+      if (canvasId === 'issue-type-pie-chart' && issueTypePieChart && typeof issueTypePieChart.toBase64Image === 'function') {
+        return issueTypePieChart.toBase64Image();
+      }
       var canvas = document.getElementById(canvasId);
       if (!canvas || typeof canvas.toDataURL !== 'function') return '';
       return canvas.toDataURL('image/png');
@@ -686,7 +696,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var chartImages = [
       { title: 'Reports Per Day', src: getCanvasImage('reports-per-day-chart') },
       { title: 'Top Municipalities', src: getCanvasImage('top-municipalities-chart') },
-      { title: 'Top Barangays', src: getCanvasImage('top-barangays-chart') }
+      { title: 'Top Barangays', src: getCanvasImage('top-barangays-chart') },
+      { title: 'Issue Distribution', src: getCanvasImage('issue-type-pie-chart') }
     ];
 
     var muniCounts = countByKey(filtered, function(r){ return r.municipality || 'Unknown'; });
@@ -830,6 +841,66 @@ document.addEventListener('DOMContentLoaded', function () {
     renderPerDayChart(filtered);
     renderTopMunicipalitiesChart(filtered);
     renderTopBarangaysChart(filtered);
+    renderIssueTypePieChart(filtered);
+  }
+
+  function renderIssueTypePieChart(filtered) {
+    var canvas = document.getElementById('issue-type-pie-chart');
+    if (!canvas || typeof Chart === 'undefined') return;
+    ensureChartRegistered();
+    
+    var counts = countByKey(filtered, function(r){ return r.issue_type || 'Other'; });
+    var top = topEntries(counts, 6); // show top 6 issue types
+    var labels = top.map(function(e){ return e.key; });
+    var values = top.map(function(e){ return e.value; });
+    
+    var ctx = canvas.getContext('2d');
+    var baseColors = ['#8b2a2a', '#dc2626', '#f59e0b', '#059669', '#3b82f6', '#7c3aed'];
+
+    if (issueTypePieChart) issueTypePieChart.destroy();
+    issueTypePieChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: values,
+          backgroundColor: baseColors,
+          borderColor: '#ffffff',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        plugins: {
+          legend: { 
+            position: 'right',
+            labels: {
+              boxWidth: 12,
+              padding: 15,
+              font: { family: "'Outfit', sans-serif", size: 11 }
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(26, 21, 18, 0.9)',
+            padding: 12,
+            cornerRadius: 10
+          },
+          datalabels: {
+            color: '#fff',
+            font: { weight: '700', family: "'Outfit', sans-serif", size: 11 },
+            formatter: function(value, ctx) {
+              var sum = 0;
+              var dataArr = ctx.chart.data.datasets[0].data;
+              dataArr.map(function(data){ sum += data; });
+              var percentage = (value * 100 / sum).toFixed(0) + "%";
+              return value > 0 ? percentage : '';
+            }
+          }
+        }
+      }
+    });
   }
 
   function bindEvents() {

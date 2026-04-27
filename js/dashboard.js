@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var supabaseCfg = window.SAMELCO_SUPABASE || {};
   var defaultTeams = ['Line Crew A', 'Line Crew B', 'Maintenance', 'Inspection'];
   var availableTeams = defaultTeams.slice();
+  var _recentlyResolvedIds = new Set();
 
   async function loadTeamsFromSupabase() {
     if (!supabaseCfg.url || !supabaseCfg.anonKey) return;
@@ -334,39 +335,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return 'Failed to update status: ' + msg;
   }
 
-  function readAuditLogs() {
-    try { return JSON.parse(localStorage.getItem('auditLogs') || '[]'); } catch(e){ return []; }
-  }
-  function renderAuditLogs() {
-    var list = document.getElementById('audit-logs-list');
-    var empty = document.getElementById('audit-logs-empty');
-    if (!list || !empty) return;
-    var logs = readAuditLogs().slice().reverse().slice(0, 100);
-    list.innerHTML = '';
-    if (!logs.length) {
-      empty.style.display = 'block';
-      return;
-    }
-    empty.style.display = 'none';
-    logs.forEach(function(l){
-      var li = document.createElement('li');
-      var when = l.ts ? new Date(l.ts).toLocaleString() : '';
-      var who = l.who || 'User';
-      var desc = l.summary || (l.type || '') + ' ' + JSON.stringify(l.data || {});
-      li.textContent = when + ' | ' + who + ' | ' + desc;
-      list.appendChild(li);
-    });
-  }
-  var toggleAuditBtn = document.getElementById('toggle-audit-btn');
-  if (toggleAuditBtn) {
-    toggleAuditBtn.addEventListener('click', function(){
-      var box = document.getElementById('audit-logs');
-      if (!box) return;
-      var show = box.style.display === 'none' || box.style.display === '';
-      box.style.display = show ? 'block' : 'none';
-      if (show) renderAuditLogs();
-    });
-  }
+
 
   // Branches button (top of nav) â€“ show dropdown with choices
   var branchesBtn = document.getElementById('branches-btn');
@@ -435,29 +404,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Municipalities data - All municipalities and cities in Samar province (26 total)
   var municipalities = [
-    { name: 'Almagro', lat: 11.9167, lng: 124.2833, barangays: ['Bacjao', 'Biasong I', 'Biasong II', 'Costa Rica', 'Costa Rica II', 'Guin-ansan', 'Imelda', 'Kerikite', 'Lunang I', 'Lunang II', 'Mabuhay', 'Magsaysay', 'Malobago', 'Marasbaras', 'Panjobjoban I', 'Panjobjoban II', 'Poblacion', 'RoÃ±o', 'San Isidro', 'San Jose', 'Talahid', 'Tonga-tonga', 'Veloso'] },
     { name: 'Basey', lat: 11.2833, lng: 125.0667, barangays: ['Amandayehan', 'Anglit', 'Bacubac', 'Balante', 'Baloog', 'Basiao', 'Baybay', 'Binongtu-an', 'Buenavista', 'Bulao', 'Burgos', 'Buscada', 'Cambayan', 'Can-abay', 'Cancaiyas', 'Canmanila', 'Catadman', 'Cogon', 'Del Pilar', 'Dolongan', 'Guintigui-an', 'Guirang', 'Iba', 'Inuntan', 'Lawa-an', 'Loog', 'Loyo', 'Mabini', 'Magallanes', 'Manlilinab', 'May-it', 'Mercado', 'Mongabong', 'New San Agustin', 'Nouvelas Occidental', 'Old San Agustin', 'Palaypay', 'Panugmonon', 'Pelit', 'Roxas', 'Salvacion', 'San Antonio', 'San Fernando', 'Sawa', 'Serum', 'Sugca', 'Sugponon', 'Sulod', 'Tinaogan', 'Tingib', 'Villa Aurora'] },
-    { name: 'Calbayog City', lat: 12.0672, lng: 124.5972, barangays: ['Acedillo', 'Aguit-itan', 'Alibaba', 'Amampacang', 'Anislag', 'Awang East', 'Awang West', 'Ba-ay', 'Bagacay', 'Bagong Lipunan', 'Baja', 'Balud', 'Bante', 'Bantian', 'Basud', 'Bayo', 'Begaho', 'Binaliw', 'Bontay', 'Buenavista', 'Bugtong', 'Cabacungan', 'Cabatuan', 'Cabicahan', 'Cabugawan', 'Cacaransan', 'Cag-anahaw', 'Cag-anibong', 'Cag-olango', 'Cagbanayacao', 'Cagbayang', 'Cagbilwang', 'Cagboborac', 'Caglanipao Sur', 'Cagmanipes Norte', 'Cagmanipes Sur', 'Cagnipa', 'Cagsalaosao', 'Cahumpan', 'Calocnayan', 'Cangomaod', 'Canhumadac', 'Capacuhan', 'Capoocan', 'Carayman', 'Carmen', 'Catabunan', 'Caybago', 'Central', 'Cogon', 'Dagum', 'Danao I', 'Danao II', 'Dawo', 'De Victoria', 'Dinabongan', 'Dinagan', 'Dinawacan', 'Esperanza', 'Gamay', 'Gadgaran', 'Gasdo', 'Geraga-an', 'Guimbaoyan Norte', 'Guimbaoyan Sur', 'Guin-on', 'Hamorawon', 'Helino', 'Hibabngan', 'Hibatang', 'Higasaan', 'Himalandrog', 'Hugon Rosales', 'Jacinto', 'Jimautan', 'Jose A. RoÃ±o', 'Kalilihan', 'Kilikili', 'La Paz', 'Langoyon', 'Lapaan', 'Libertad', 'Limarayon', 'Longsob', 'Lonoy', 'Looc', 'Mabini I', 'Mabini II', 'Macatingog', 'Mag-ubay', 'Maguino-o', 'Malaga', 'Malajog', 'Malayog', 'Malopalo', 'Mancol', 'Mantaong', 'Manuel Barral, Sr.', 'Marcatubig', 'Matobato', 'Mawacat', 'Maybog', 'Maysalong', 'Migara', 'Nabang', 'Naga', 'Naguma', 'Navarro', 'Nijaga', 'Oboob', 'Obrero', 'Olera', 'Oquendo', 'OsmeÃ±a', 'Pagbalican', 'Palanas', 'Palanogan', 'Panlayahan', 'Panonongan', 'Panoypoy', 'Patong', 'Payahan', 'PeÃ±a', 'Pilar', 'Pinamorotan', 'Quezon', 'Rawis', 'Rizal I', 'Rizal II', 'Roxas I', 'Roxas II', 'Saljag', 'Salvacion', 'San Antonio', 'San Isidro', 'San Joaquin', 'San Jose', 'San Policarpio', 'San Rufino', 'Saputan', 'Sigo', 'Sinantan', 'Sinidman Occidental', 'Sinidman Oriental', 'Tabawan', 'Talahiban', 'Tanval', 'Tapa-e', 'Tarabucan', 'Tigbe', 'Tinambacan Norte', 'Tinambacan Sur', 'Tinaplacan', 'Tomaliguez', 'Trinidad', 'Victory', 'Villahermosa'] },
     { name: 'Calbiga', lat: 11.6167, lng: 125.0167, barangays: ['Antol', 'Bacyaran', 'Barangay 1', 'Barangay 2', 'Barangay 3', 'Barangay 4', 'Barangay 5', 'Barangay 6', 'Barangay 7', 'Barobaybay', 'Beri', 'Binanggaran', 'Borong', 'Bulao', 'Buluan', 'Caamlongan', 'Calayaan', 'Calingonan', 'Canbagtic', 'Canticum', 'Daligan', 'Guinbanga', 'Hindang', 'Hubasan', 'Literon', 'Lubang', 'Macaalan', 'Mahangcao', 'Malabal', 'Minata', 'Otoc', 'Panayuran', 'Pasigay', 'Patong', 'Polangi', 'Rawis', 'San Ignacio', 'San Mauricio', 'Sinalangtan', 'Timbangan', 'Tinago'] },
     { name: 'Catbalogan City', lat: 11.7792, lng: 124.8842, barangays: ['Albalate', 'Bagongon', 'Bangon', 'Basiao', 'Buluan', 'Bunuanan', 'Cabugawan', 'Cagudalo', 'Cagusipan', 'Cagutian', 'Cagutsan', 'Canhawan Gote', 'Canlapwas', 'Cawayan', 'Cinco', 'Darahuway Daco', 'Darahuway Gote', 'Estaka', 'Guindaponan', 'Guinsorongan', 'Ibol', 'Iguid', 'Lagundi', 'Libas', 'Lobo', 'Manguehay', 'Maulong', 'Mercedes', 'Mombon', 'MuÃ±oz', 'New Mahayag', 'Old Mahayag', 'Palanyogon', 'Pangdan', 'Payao', 'Poblacion 1', 'Poblacion 2', 'Poblacion 3', 'Poblacion 4', 'Poblacion 5', 'Poblacion 6', 'Poblacion 7', 'Poblacion 8', 'Poblacion 9', 'Poblacion 10', 'Poblacion 11', 'Poblacion 12', 'Poblacion 13', 'Pupua', 'Rama', 'San Andres', 'San Pablo', 'San Roque', 'San Vicente', 'Silanga', 'Socorro', 'Totoringon'] },
     { name: 'Daram', lat: 11.6333, lng: 124.7833, barangays: ['Arawane', 'Astorga', 'Bachao', 'Baclayan', 'Bagacay', 'Bayog', 'Betaug', 'Birawan', 'Bono-anon', 'Buenavista', 'Burgos', 'Cabac', 'Cabil-isan', 'Cabiton-an', 'Cabugao', 'Cagboboto', 'Calawan-an', 'Cambuhay', 'Campelipa', 'Candugue', 'Canloloy', 'Cansaganay', 'Casab-ahan', 'Guindapunan', 'Guintampilan', 'Iquiran', 'Jacopon', 'Losa', 'Lucob-lucob', 'Mabini', 'Macalpe', 'Mandoyucan', 'Marupangdan', 'Mayabay', 'Mongolbongol', 'Nipa', 'Parasan', 'Poblacion 1', 'Poblacion 2', 'Poblacion 3', 'Pondang', 'Poso', 'Real', 'Rizal', 'San Antonio', 'San Jose', 'San Miguel', 'San Roque', 'San Vicente', 'Saugan', 'So-ong', 'Sua', 'Sugod', 'Talisay', 'Tugas', 'Ubo', 'Valles-Bello', 'Yangta'] },
-    { name: 'Gandara', lat: 12.0167, lng: 124.8167, barangays: ['Adela Heights', 'Arong', 'Balocawe', 'Bangahon', 'Beslig', 'Buao', 'Bunyagan', 'Burabod I', 'Burabod II', 'Calirocan', 'Canhumawid', 'Caparangasan', 'Caranas', 'Carmona', 'Casab-ahan', 'Casandig', 'Catorse de Agosto', 'Caugbusan', 'Concepcion', 'Diaz', 'Dumalo-ong', 'Elcano', 'Gerali', 'Gereganan', 'Giaboc', 'Hampton', 'Hetebac', 'Himamaloto', 'Hinayagan', 'Hinugacan', 'Hiparayan', 'Jasminez', 'Lungib', 'Mabuhay', 'Macugo', 'Malayog', 'Marcos', 'Minda', 'Nacube', 'Nalihugan', 'Napalisan', 'Natimonan', 'Ngoso', 'Palambrag', 'Palanas', 'Pizarro', 'PiÃ±aplata', 'Pologon', 'Purog', 'Rawis', 'Rizal', 'Samoyao', 'San Agustin', 'San Antonio', 'San Enrique', 'San Francisco', 'San Isidro', 'San Jose', 'San Miguel', 'San Pelayo', 'San Ramon', 'Santa Elena', 'Santo Niño', 'Senibaran', 'Sidmon', 'Tagnao', 'Tambongan', 'Tawiran', 'Tigbawon'] },
     { name: 'Hinabangan', lat: 11.6833, lng: 125.0833, barangays: ['Bagacay', 'Binobucalan', 'Bucalan', 'Cabalagnan', 'Cabang', 'Canano', 'Concord', 'Consolabao', 'Dalosdoson', 'Fatima', 'Lim-ao', 'Malihao', 'Mugdo', 'OsmeÃ±a', 'Poblacion 1', 'Poblacion 2', 'Rawis', 'San Jose', 'San Rafael', 'Tabay', 'Yabon'] },
     { name: 'Jiabong', lat: 11.7667, lng: 124.9500, barangays: ['Barangay No. 1', 'Barangay No. 2', 'Barangay No. 3', 'Barangay No. 4', 'Barangay No. 5', 'Barangay No. 6', 'Barangay No. 7', 'Barangay No. 8', 'Bawang', 'Bugho', 'Camarobo-an', 'Candayao', 'Cantongtong', 'Casapa', 'Catalina', 'Cristina', 'Dogongan', 'Garcia', 'Hinaga', 'Jia-an', 'Jidanao', 'Lulugayan', 'Macabetas', 'Malino', 'Malobago', 'Mercedes', 'Nagbac', 'Parina', 'Salvacion', 'San Andres', 'San Fernando', 'San Miguel', 'Tagbayaon', 'Victory'] },
     { name: 'Marabut', lat: 11.1167, lng: 125.2167, barangays: ['Amambucale', 'Amantillo', 'Binukyahan', 'Caluwayan', 'Canyoyo', 'Catato Poblacion', 'Ferreras', 'Legaspi', 'Lipata', 'Logero', 'Mabuhay', 'Malobago', 'Odoc', 'OsmeÃ±a', 'Panan-awan', 'Pinalanga', 'Pinamitinan', 'RoÃ±o', 'San Roque', 'Santa Rita', 'Santo Niño Poblacion', 'Tagalag', 'Tinabanan', 'Veloso'] },
-    { name: 'Matuguinao', lat: 12.1333, lng: 124.8833, barangays: ['Angyap', 'Bag-otan', 'Barruz', 'Camonoan', 'Carolina', 'Deit', 'Del Rosario', 'Inubod', 'Libertad', 'Ligaya', 'Mabuligon Poblacion', 'Maduroto Poblacion', 'Mahanud', 'Mahayag', 'Nagpapacao', 'Rizal', 'Salvacion', 'San Isidro', 'San Roque', 'Santa Cruz'] },
     { name: 'Motiong', lat: 11.7782, lng: 124.9986, barangays: ['Angyap', 'Barayong', 'Bayog', 'Beri', 'Bonga', 'Calantawan', 'Calapi', 'Caluyahan', 'Canatuan', 'Candomacol', 'Canvais', 'Capaysagan', 'Caranas', 'Caulayanan', 'Hinica-an', 'Inalad', 'Linonoban', 'Malobago', 'Malonoy', 'Mararangsi', 'Maypange', 'New Minarog', 'Oyandic', 'Pamamasan', 'Poblacion I', 'Poblacion I-A', 'Pusongan', 'San Andres', 'Santo Niño', 'Sarao'] },
     { name: 'Paranas (Wright)', lat: 11.7715, lng: 125.0225, barangays: ['Anagasi', 'Apolonia', 'Bagsa', 'Balbagan', 'Bato', 'Buray', 'Cantaguic', 'Cantao-an', 'Cantato', 'Casandig I', 'Casandig II', 'Cawayan', 'Concepcion', 'Jose Roño', 'Lawaan I', 'Lawaan II', { name: 'Lipata', lat: 11.788, lng: 125.016 }, 'Lokilokon', 'Mangcal', 'Maylobe', 'Minarog', 'Nawi', 'Pabanog', 'Paco', 'Pagsa-ogan', 'Pagsanjan', 'Patag', 'Pequit', 'Poblacion 1', 'Poblacion 2', 'Poblacion 3', 'Poblacion 4', 'Poblacion 5', 'Poblacion 6', 'Salay', 'San Isidro', 'Santo Niño', 'Sulopan', 'Tabucan', 'Tapul', 'Tenani', 'Tigbawon', 'Tula', 'Tutubigan'] },
     { name: 'Pinabacdao', lat: 11.6167, lng: 124.9833, barangays: ['Bangon', 'Barangay I', 'Barangay II', 'Botoc', 'Bugho', 'Calampong', 'Canlobo', 'Catigawan', 'Dolores', 'Lale', 'Lawaan', 'Laygayon', 'Layo', 'Loctob', 'Madalunot', 'Magdawat', 'Mambog', 'Manaing', 'Nabong', 'Obayan', 'Pahug', 'Parasanon', 'Pelaon', 'San Isidro'] },
-    { name: 'San Jorge', lat: 11.3000, lng: 125.0833, barangays: ['Anquiana', 'Aurora', 'Bay-ang', 'Blanca Aurora', 'Buenavista I', 'Buenavista II', 'Bulao', 'Bungliw', 'Cabugao', 'Cag-olo-olo', 'Calundan', 'Cantaguic', 'Canyaki', 'Cogtoto-og', 'Erenas', 'Gayondato', 'Guadalupe', 'Guindapunan', 'Hernandez', 'Himay', 'Janipon', 'La Paz', 'Libertad', 'Lincoro', 'Mabuhay', 'Mancol', 'Matalud', 'Mobo-ob', 'Mombon', 'Puhagan', 'Quezon', 'Ranera', 'Rawis', 'Rosalim', 'San Isidro', 'San Jorge I', 'San Jorge II', 'San Juan', 'Sapinit', 'Sinit-an', 'Tomogbong'] },
     { name: 'San Jose de Buan', lat: 12.0500, lng: 125.0333, barangays: ['Aguingayan', 'Babaclayon', 'Barangay 1', 'Barangay 2', 'Barangay 3', 'Barangay 4', 'Can-aponte', 'Cataydongan', 'Gusa', 'Hagbay', 'Hibaca-an', 'Hiduroma', 'Hilumot', 'San Nicolas'] },
     { name: 'San Sebastian', lat: 11.7000, lng: 125.0167, barangays: ['Balogo', 'Bontod', 'Cabaywa', 'Camanhagay', 'Campiyak', 'Canduyucan', 'Dolores', 'Hita-asan I', 'Hita-asan II', 'Inobongan', 'Poblacion Barangay 1', 'Poblacion Barangay 2', 'Poblacion Barangay 3', 'Poblacion Barangay 4'] },
-    { name: 'Santa Margarita', lat: 12.0378, lng: 124.6584, barangays: ['Agrupacion', 'Arapison', 'Avelino', 'Bahay', 'Balud', 'Bana-ao', 'Burabod', 'Cagsumje', 'Cautod (Poblacion)', 'Camperito', 'Campeig', 'Can-ipulan', 'Canmoros', 'Cinco', 'Curry', 'Gajo', 'Hindang', 'Ilo', 'Imelda', 'Inoraguiao', 'Jolacao', 'Lambao', 'Mabuhay', 'Mahayag', 'Matayonas', 'Monbon (Poblacion)', 'Nabulo', 'Napuro I', 'Napuro II', 'Palale', 'Panabatan', 'Panaruan', 'Roxas', 'Salvacion', 'Solsogon', 'Sundara'] },
     { name: 'Santa Rita', lat: 11.4500, lng: 124.9333, barangays: ['Alegria', 'Anibongan', 'Aslum', 'Bagolibas', 'Binanalan', 'Bokinggan Poblacion', 'Bougainvilla Poblacion', 'Cabacungan', 'Cabunga-an', 'Camayse', 'Cansadong', 'Caticugan', 'Dampigan', 'Guinbalot-an', 'Gumamela Poblacion', 'Hinangudtan', 'Igang-igang', 'La Paz', 'Lupig', 'Magsaysay', 'Maligaya', 'New Manunca', 'Old Manunca', 'Pagsulhogon', 'Rosal Poblacion', 'Salvacion', 'San Eduardo', 'San Isidro', 'San Juan', 'San Pascual', 'San Pedro', 'San Roque', 'Santa Elena', 'Santan Poblacion', 'Tagacay', 'Tominamos', 'Tulay', 'Union'] },
     { name: 'Santo Niño', lat: 11.9833, lng: 124.4667, barangays: ['Balatguti', 'Baras', 'Basud', 'Buenavista', 'Cabunga-an', 'Corocawayan', 'Ilijan', 'Ilo', 'Lobelobe', 'Pinanangnan', 'Sevilla', 'Takut', 'Villahermosa'] },
     { name: 'Tagapul-an', lat: 11.9500, lng: 124.8333, barangays: ['Baguiw', 'Balocawe', 'Guinbarucan', 'Labangbaybay', 'Luna', 'Mataluto', 'Nipa', 'Pantalan', 'Pulangbato', 'San Jose', 'San Vicente', 'Suarez', 'Sugod', 'Trinidad'] },
     { name: 'Talalora', lat: 11.5333, lng: 124.8333, barangays: ['Bo. Independencia', 'Malaguining', 'Mallorga', 'Navatas Daku', 'Navatas Guti', 'Placer', 'Poblacion Barangay 1', 'Poblacion Barangay 2', 'San Juan', 'Tatabunan', 'Victory'] },
-    { name: 'Tarangnan', lat: 11.9000, lng: 124.7500, barangays: ['Alcazar', 'Awang', 'Bahay', 'Balonga-as', 'Balugo', 'Bangon Gote', 'Baras', 'Binalayan', 'Bisitahan', 'Bonga', 'Cabunga-an', 'Cagtutulo', 'Cambatutay Nuevo', 'Cambatutay Viejo', 'Canunghan', 'Catan-agan', 'Dapdap', 'Gallego', 'Imelda Poblacion', 'Lahong', 'Libucan Dacu', 'Libucan Gote', 'Lucerdoni', 'Majacob', 'Mancares', 'Marabut', 'Oeste-A', 'Oeste-B', 'Pajo', 'Palencia', 'Poblacion A', 'Poblacion B', 'Poblacion C', 'Poblacion D', 'Poblacion E', 'San Vicente', 'Santa Cruz', 'Sugod', 'Talinga', 'Tigdaranao', 'Tizon'] },
     { name: 'Villareal', lat: 11.5667, lng: 124.9333, barangays: ['Banquil', 'Bino-ongan', 'Burabod', 'Cambaguio', 'Canmucat', 'Central', 'Conant', 'Guintarcan', 'Himyangan', 'Igot', 'Inarumbacan', 'Inasudlan', 'Lam-awan', 'Lamingao', 'Lawa-an', 'Macopa', 'Mahayag', 'Malonoy', 'Mercado', 'Miramar', 'Nagcaduha', 'Pacao', 'Pacoyoy', 'Pangpang', 'Patag', 'Plaridel', 'Polangi', 'San Andres', 'San Fernando', 'San Rafael', 'San Roque', 'Santa Rosa', 'Santo Niño', 'Soledad', 'Tayud', 'Tomabe', 'Ulayan', 'Villarosa Poblacion'] },
     { name: 'Zumarraga', lat: 11.6333, lng: 124.8500, barangays: ['Alegria', 'Arteche', 'Bioso', 'Boblaran', 'Botaera', 'Buntay', 'Camayse', 'Canwarak', 'Ibarra', 'Lumalantang', 'Macalunod', 'Maga-an', 'Maputi', 'Marapilit', 'Monbon', 'Mualbual', 'Pangdan', 'Poblacion 1', 'Poblacion 2', 'Poro', 'San Isidro', 'Sugod', 'Talib', 'Tinaugan', 'Tubigan'] }
   ];
@@ -1969,7 +1931,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (getMunicipalityIndexKey(r.name || '') !== muniKey) return;
       var mk = reportMarkersById[String(r.id || '')];
       if (!mk) return;
-      setMarkerBlink(mk, isUnreadNewReportRow(r, newReadSet));
+      setMarkerBlink(mk, isNewComplianceRow(r) || isOnTheWayRow(r));
     });
     updateMunicipalityBlinkState(muniName);
   }
@@ -2010,7 +1972,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (normalizeBarangayName(brgy) !== brgyKey) return;
       var mk = reportMarkersById[String(r.id || '')];
       if (!mk) return;
-      setMarkerBlink(mk, isUnreadNewReportRow(r, newReadSet));
+      setMarkerBlink(mk, isNewComplianceRow(r) || isOnTheWayRow(r));
     });
   }
 
@@ -2021,16 +1983,16 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!mk) return;
     var rows = window._dashboardLocations || [];
     var readSet = buildIdSet(getReadNotifIds());
-    var hasUnread = rows.some(function(r) {
+    var hasBlinking = rows.some(function(r) {
       if (!r) return false;
       if (getMunicipalityIndexKey(r.name || '') !== key) return false;
       if (isResolvedRow(r)) return false;
       var b = resolveBarangayForReport(r) || r.barangay || '';
       if (isPinHidden(r.name || '', b, r.id, r)) return false;
       if (!isDbPendingRow(r) && isBarangayRestored(r.name || '', b)) return false;
-      return isUnreadNewReportRow(r, readSet);
+      return isNewComplianceRow(r) || isOnTheWayRow(r);
     });
-    setMarkerBlink(mk, hasUnread);
+    setMarkerBlink(mk, hasBlinking);
   }
   function toggleNotif(open) {
     if (!notifDropdown || !notifBtn) return;
@@ -2235,8 +2197,19 @@ document.addEventListener('DOMContentLoaded', function () {
       notifList.appendChild(div);
     });
     var totalForBadge = window._lastNewRows ? window._lastNewRows.length : items.length;
-    notifBadge.textContent = String(totalForBadge);
-    notifBadge.style.display = totalForBadge > 0 ? 'inline-flex' : 'none';
+    if (notifBadge) {
+      notifBadge.textContent = String(totalForBadge);
+      notifBadge.style.display = totalForBadge > 0 ? 'inline-flex' : 'none';
+      
+      // Add/remove ringing animation class
+      if (notifBtn) {
+        if (totalForBadge > 0) {
+          notifBtn.classList.add('has-new');
+        } else {
+          notifBtn.classList.remove('has-new');
+        }
+      }
+    }
   }
 
   function renderReportMarkers(rows) {
@@ -2248,7 +2221,10 @@ document.addEventListener('DOMContentLoaded', function () {
     rows.forEach(function(r) {
       var rb = resolveBarangayForReport(r) || r.barangay || '';
       if (isPinHidden(r.name || '', rb, r.id, r)) return;
-      if (isResolvedRow(r)) return;
+      
+      var isRecentlyResolved = _recentlyResolvedIds.has(String(r.id));
+      if (isResolvedRow(r) && !isRecentlyResolved) return;
+
       var lat = Number(r.latitude);
       var lng = Number(r.longitude);
       var normalizedMunicipality = getMunicipalityByName(r.name || '') || getMunicipalityByKey(r.name || '');
@@ -2275,8 +2251,14 @@ document.addEventListener('DOMContentLoaded', function () {
       var statusKey = getStatusKey(r);
       var assignedTeam = getAssignedTeamForRow(r);
       var isNewReport = isNewComplianceRow(r);
-      var isBlinking = isUnreadNewReportRow(r, readSet);
-      var basePinClass = statusKey === 'ontheway' ? 'marker-pin-pending' : (isNewReport ? 'marker-pin-new' : 'marker-pin-pending');
+      var isOnTheWay = isOnTheWayRow(r);
+      // Always blink if new compliance or on the way, until restored
+      var isBlinking = isNewReport || isOnTheWay;
+      var basePinClass = isOnTheWay ? 'marker-pin-pending' : (isNewReport ? 'marker-pin-new' : 'marker-pin-pending');
+      if (isRecentlyResolved) {
+        basePinClass = 'marker-pin-restored marker-pin-fade-out';
+        isBlinking = false;
+      }
       var iconForRow = createMarkerIcon(basePinClass + (isBlinking ? ' marker-pin-blink' : ''));
       var marker = L.marker([lat, lng], { icon: iconForRow }).addTo(reportMarkersLayer);
       var municipalityKey = getMunicipalityIndexKey(displayMunicipality || r.name || '');
@@ -2340,7 +2322,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (isUnreadNewReportRow(r, buildIdSet(getReadNotifIds()))) {
           markReportAsRead(r.id);
         }
-        setMarkerBlink(marker, false);
+        setMarkerBlink(marker, isNewComplianceRow(r) || isOnTheWayRow(r));
         updateMunicipalityBlinkState(displayMunicipality || '');
         if (window.map) window.map.setView([lat, lng], 13);
         marker.openPopup();
@@ -2350,7 +2332,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (isUnreadNewReportRow(r, buildIdSet(getReadNotifIds()))) {
           markReportAsRead(r.id);
         }
-        setMarkerBlink(marker, false);
+        setMarkerBlink(marker, isNewComplianceRow(r) || isOnTheWayRow(r));
         updateMunicipalityBlinkState(displayMunicipality || '');
         var container = e.popup.getElement();
         if (container && typeof L !== 'undefined' && L.DomEvent) {
@@ -2465,6 +2447,28 @@ document.addEventListener('DOMContentLoaded', function () {
               try {
                 var nextStatus = isResolvedRow(r) ? 'pending' : 'resolved';
                 var teamForSave = getTeamForStatusUpdate(r, teamSelectEl);
+                
+                // If resolving, show visual feedback before reloading
+                if (nextStatus === 'resolved') {
+                  var m = reportMarkersById[String(r.id)];
+                  if (m) {
+                    var iconEl = m.getElement().querySelector('.marker-pin');
+                    if (iconEl) {
+                      // Change to green and start fade out
+                      iconEl.className = 'marker-pin marker-pin-restored marker-pin-fade-out';
+                      // Close popup so user can see the pin clearly
+                      m.closePopup();
+                    }
+                  }
+                  // Keep the marker on map for 3 seconds even after data refresh
+                  _recentlyResolvedIds.add(String(r.id));
+                  setTimeout(function() {
+                    _recentlyResolvedIds.delete(String(r.id));
+                    // Optional: trigger a refresh to finally remove it if it was resolved
+                    loadReportsFromSupabase();
+                  }, 3000);
+                }
+
                 await setReportStatusById(r.id, nextStatus, teamForSave);
                 
                 if (String(nextStatus).toLowerCase() === 'resolved') {

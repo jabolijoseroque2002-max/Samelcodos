@@ -72,14 +72,6 @@
       "destination": "/html/records.html"
     },
     {
-      "source": "/report",
-      "destination": "/html/report.html"
-    },
-    {
-      "source": "/report.html",
-      "destination": "/html/report.html"
-    },
-    {
       "source": "/user-dashboard",
       "destination": "/html/user-dashboard.html"
     },

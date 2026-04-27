@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  var contactForm = document.getElementById('contact-form');
+  var sendEmailBtn = document.getElementById('send-email-btn');
   var copyMessageBtn = document.getElementById('copy-message-btn');
   function buildMessage() {
     var name = document.getElementById('msg-name') ? document.getElementById('msg-name').value.trim() : '';
@@ -94,85 +94,11 @@ document.addEventListener('DOMContentLoaded', function () {
     if (body) lines.push('Message: ' + body);
     return lines.join('\n');
   }
-
-  if (contactForm) {
-    contactForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      var name = document.getElementById('msg-name').value.trim();
-      var account = document.getElementById('msg-account').value.trim();
-      var email = document.getElementById('msg-email').value.trim();
-      var body = document.getElementById('msg-body').value.trim();
-      
-      var submitBtn = contactForm.querySelector('button[type="submit"]');
-      var originalBtnText = submitBtn ? submitBtn.textContent : 'Send Email';
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Sending...';
-      }
-
-      // 1. Save to Supabase database
-      try {
-        var supabaseCfg = window.SAMELCO_SUPABASE;
-        if (supabaseCfg && supabaseCfg.url) {
-          var dbRes = await fetch(supabaseCfg.url + '/rest/v1/contact_messages', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'apikey': supabaseCfg.anonKey,
-              'Authorization': 'Bearer ' + supabaseCfg.anonKey
-            },
-            body: JSON.stringify({
-              name: name,
-              account_number: account,
-              email: email,
-              message: body
-            })
-          });
-          if (!dbRes.ok) {
-            console.error('Failed to save message to database:', await dbRes.text());
-          }
-        }
-      } catch (dbErr) {
-        console.error('Database error:', dbErr);
-      }
-
-      // 2. Send email via EmailJS
-      if (typeof emailjs !== 'undefined') {
-        emailjs.send(
-          'service_xtzxndr', // Service ID
-          'YOUR_TEMPLATE_ID', // Replace with your actual template ID for the Contact Form
-          {
-            from_name: name,
-            from_email: email,
-            account_number: account,
-            message: body,
-            reply_to: email
-          }
-        ).then(function() {
-          alert('Message sent successfully!');
-          contactForm.reset();
-        }).catch(function(error) {
-          console.error('Failed to send email:', error);
-          if (error && error.text && error.text.includes('template ID not found')) {
-            alert('Failed to send message: The template ID not found. To find this ID, visit https://dashboard.emailjs.com/admin/templates\n\nPlease replace "YOUR_TEMPLATE_ID" in js/contact.js with your actual template ID.');
-          } else {
-            alert('Failed to send message via EmailJS: ' + (error.text || JSON.stringify(error)));
-          }
-        }).finally(function() {
-          if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = originalBtnText;
-          }
-        });
-      } else {
-        alert('EmailJS is not loaded. Message saved to database only.');
-        contactForm.reset();
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = originalBtnText;
-        }
-      }
+  if (sendEmailBtn) {
+    sendEmailBtn.addEventListener('click', function(){
+      var msg = buildMessage();
+      var mailto = 'mailto:support@samelcodos.ph?subject=' + encodeURIComponent('Contact Request') + '&body=' + encodeURIComponent(msg);
+      window.location.href = mailto;
     });
   }
   if (copyMessageBtn) {

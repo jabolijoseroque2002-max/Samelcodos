@@ -122,7 +122,7 @@ begin
   end if;
 
   return query
-  insert into public.customer_users (
+  insert into public.customer_users as cu (
     full_name,
     email,
     account_number,
@@ -141,17 +141,19 @@ begin
     extensions.crypt(p_password, extensions.gen_salt('bf', 10))
   )
   returning
-    customer_users.id,
-    customer_users.full_name,
-    customer_users.email,
-    customer_users.account_number,
-    customer_users.contact_number,
-    customer_users.municipality,
-    customer_users.barangay,
-    customer_users.created_at,
-    customer_users.last_login_at;
+    cu.id,
+    cu.full_name,
+    cu.email,
+    cu.account_number,
+    cu.contact_number,
+    cu.municipality,
+    cu.barangay,
+    cu.created_at,
+    cu.last_login_at;
 end;
 $$;
+
+drop function if exists public.login_customer_user(text, text);
 
 create or replace function public.login_customer_user(
   p_email text,
@@ -180,21 +182,24 @@ begin
     raise exception 'Invalid email or password';
   end if;
 
-  select *
-  into v_user
-  from public.customer_users cu
-  where lower(cu.email) = v_email
-    and cu.is_active = true
-  limit 1;
+  SELECT *
+  INTO v_user
+  FROM public.customer_users cu
+  WHERE lower(btrim(cu.email)) = v_email
+  LIMIT 1;
 
-  if v_user.id is null then
-    raise exception 'Invalid email or password';
-  end if;
+  IF v_user.id IS NULL THEN
+    RAISE EXCEPTION 'Invalid email or password';
+  END IF;
 
-  if v_user.password_hash is null
-     or extensions.crypt(p_password, v_user.password_hash) <> v_user.password_hash then
-    raise exception 'Invalid email or password';
-  end if;
+  IF v_user.is_active = false THEN
+    RAISE EXCEPTION 'Account is inactive. Please contact support.';
+  END IF;
+
+  IF v_user.password_hash IS NULL
+     OR extensions.crypt(p_password, v_user.password_hash) <> v_user.password_hash THEN
+    RAISE EXCEPTION 'Invalid email or password';
+  END IF;
 
   update public.customer_users
   set last_login_at = now()

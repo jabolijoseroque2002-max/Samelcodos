@@ -5,7 +5,10 @@
 
 BEGIN;
 
--- 1. Enable pgcrypto for password hashing
+-- ==========================================
+-- 1. Setup & Extensions
+-- ==========================================
+CREATE SCHEMA IF NOT EXISTS extensions;
 CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA extensions;
 
 -- Safe shared trigger helper used by tables with an updated_at column.
@@ -55,6 +58,199 @@ BEGIN
     END IF;
 END
 $$;
+
+-- Customer Auth Functions
+DROP FUNCTION IF EXISTS public.register_customer_user(text, text, text, text, text, text, text, text);
+DROP FUNCTION IF EXISTS public.register_customer_user(text, text, text, text, text, text, text);
+
+CREATE OR REPLACE FUNCTION public.register_customer_user(
+  p_full_name text,
+  p_email text,
+  p_password text,
+  p_account_number text default null,
+  p_contact_number text default null,
+  p_municipality text default null,
+  p_barangay text default null
+)
+RETURNS TABLE (
+  id bigint,
+  full_name text,
+  email text,
+  account_number text,
+  contact_number text,
+  municipality text,
+  barangay text,
+  created_at timestamptz,
+  last_login_at timestamptz
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, extensions
+AS $$
+DECLARE
+  v_email text := lower(btrim(coalesce(p_email, '')));
+  v_account_number text := nullif(btrim(coalesce(p_account_number, '')), '');
+  v_contact_number text := nullif(btrim(coalesce(p_contact_number, '')), '');
+  v_municipality text := nullif(btrim(coalesce(p_municipality, '')), '');
+  v_barangay text := nullif(btrim(coalesce(p_barangay, '')), '');
+BEGIN
+  IF btrim(coalesce(p_full_name, '')) = '' THEN
+    RAISE EXCEPTION 'Full name is required';
+  END IF;
+
+  IF v_email = '' OR position('@' IN v_email) = 0 THEN
+    RAISE EXCEPTION 'Valid email is required';
+  END IF;
+
+  IF length(coalesce(p_password, '')) < 8 THEN
+    RAISE EXCEPTION 'Password must be at least 8 characters';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1
+    FROM public.customer_users cu
+    WHERE lower(cu.email) = v_email
+  ) THEN
+    RAISE EXCEPTION 'Email is already registered';
+  END IF;
+
+  IF v_account_number IS NOT NULL AND EXISTS (
+    SELECT 1
+    FROM public.customer_users cu
+    WHERE cu.account_number = v_account_number
+  ) THEN
+    RAISE EXCEPTION 'Account number is already registered';
+  END IF;
+
+  RETURN QUERY
+  INSERT INTO public.customer_users AS cu (
+    full_name,
+    email,
+    account_number,
+    contact_number,
+    municipality,
+    barangay,
+    password_hash
+  )
+  VALUES (
+    btrim(p_full_name),
+    v_email,
+    v_account_number,
+    v_contact_number,
+    v_municipality,
+    v_barangay,
+    extensions.crypt(p_password, extensions.gen_salt('bf', 10))
+  )
+  RETURNING
+    cu.id,
+    cu.full_name,
+    cu.email,
+    cu.account_number,
+    cu.contact_number,
+    cu.municipality,
+    cu.barangay,
+    cu.created_at,
+    cu.last_login_at;
+END;
+$$;
+
+DROP FUNCTION IF EXISTS public.login_customer_user(text, text);
+
+CREATE OR REPLACE FUNCTION public.login_customer_user(
+  p_email text,
+  p_password text
+)
+RETURNS TABLE (
+  id bigint,
+  full_name text,
+  email text,
+  account_number text,
+  contact_number text,
+  municipality text,
+  barangay text,
+  created_at timestamptz,
+  last_login_at timestamptz
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, extensions
+AS $$
+DECLARE
+  v_email text := lower(btrim(coalesce(p_email, '')));
+  v_user public.customer_users%rowtype;
+BEGIN
+  IF v_email = '' OR coalesce(p_password, '') = '' THEN
+    RAISE EXCEPTION 'Invalid email or password';
+  END IF;
+
+  SELECT *
+  INTO v_user
+  FROM public.customer_users cu
+  WHERE lower(btrim(cu.email)) = v_email
+  LIMIT 1;
+
+  IF v_user.id IS NULL THEN
+    RAISE EXCEPTION 'Invalid email or password';
+  END IF;
+
+  IF v_user.is_active = false THEN
+    RAISE EXCEPTION 'Account is inactive. Please contact support.';
+  END IF;
+
+  IF v_user.password_hash IS NULL
+     OR extensions.crypt(p_password, v_user.password_hash) <> v_user.password_hash THEN
+    RAISE EXCEPTION 'Invalid email or password';
+  END IF;
+
+  UPDATE public.customer_users
+  SET last_login_at = now()
+  WHERE customer_users.id = v_user.id
+  RETURNING *
+  INTO v_user;
+
+  RETURN QUERY
+  SELECT
+    v_user.id,
+    v_user.full_name,
+    v_user.email,
+    v_user.account_number,
+    v_user.contact_number,
+    v_user.municipality,
+    v_user.barangay,
+    v_user.created_at,
+    v_user.last_login_at;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.register_customer_user(text, text, text, text, text, text, text) FROM public;
+REVOKE ALL ON FUNCTION public.login_customer_user(text, text) FROM public;
+
+GRANT EXECUTE ON FUNCTION public.register_customer_user(text, text, text, text, text, text, text) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.login_customer_user(text, text) TO anon, authenticated;
+
+DROP FUNCTION IF EXISTS public.get_customer_email_by_name(text);
+
+CREATE OR REPLACE FUNCTION public.get_customer_email_by_name(
+  p_full_name text
+)
+RETURNS TABLE (
+  email text
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT cu.email
+  FROM public.customer_users cu
+  WHERE lower(cu.full_name) = lower(btrim(p_full_name))
+    AND cu.is_active = true
+  LIMIT 1;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.get_customer_email_by_name(text) TO anon, authenticated;
 
 -- Enable RLS
 ALTER TABLE public.customer_users ENABLE ROW LEVEL SECURITY;
@@ -181,8 +377,8 @@ BEGIN
 END
 $$;
 
-ALTER TABLE public.team_dashboard_accounts ENABLE ROW LEVEL SECURITY;
-REVOKE ALL ON TABLE public.team_dashboard_accounts FROM anon, authenticated;
+GRANT ALL ON TABLE public.team_dashboard_accounts TO anon, authenticated, service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
 
 -- ==========================================
 -- 4. reports
@@ -501,6 +697,8 @@ ALTER TABLE public.report_status_history ENABLE ROW LEVEL SECURITY;
 -- 10. RPC functions
 -- ==========================================
 
+DROP FUNCTION IF EXISTS public.set_report_status(bigint, text, text);
+
 CREATE OR REPLACE FUNCTION public.set_report_status(
     p_report_id bigint,
     p_status text,
@@ -635,6 +833,8 @@ BEGIN
         v_team.created_at;
 END;
 $$;
+
+DROP FUNCTION IF EXISTS public.login_team_dashboard(text, text);
 
 CREATE OR REPLACE FUNCTION public.login_team_dashboard(
     p_email text,
@@ -1085,6 +1285,8 @@ BEGIN
         v_personnel.created_at;
 END;
 $$;
+
+DROP FUNCTION IF EXISTS public.login_personnel_account(text, text);
 
 CREATE OR REPLACE FUNCTION public.login_personnel_account(
     p_email text,

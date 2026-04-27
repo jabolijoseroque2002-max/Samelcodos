@@ -1,77 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
-  // Municipalities (SAMELCO II – Samar) with barangays
-
-  var municipalities = [
-    { name: 'Almagro', lat: 11.9167, lng: 124.2833, barangays: ['Bacjao', 'Biasong I', 'Biasong II', 'Costa Rica', 'Costa Rica II', 'Guin-ansan', 'Imelda', 'Kerikite', 'Lunang I', 'Lunang II', 'Mabuhay', 'Magsaysay', 'Malobago', 'Marasbaras', 'Panjobjoban I', 'Panjobjoban II', 'Poblacion', 'Roño', 'San Isidro', 'San Jose', 'Talahid', 'Tonga-tonga', 'Veloso'] },
-    { name: 'Basey', lat: 11.2833, lng: 125.0667, barangays: ['Amandayehan', 'Anglit', 'Bacubac', 'Balante', 'Baloog', 'Basiao', 'Baybay', 'Binongtu-an', 'Buenavista', 'Bulao', 'Burgos', 'Buscada', 'Cambayan', 'Can-abay', 'Cancaiyas', 'Canmanila', 'Catadman', 'Cogon', 'Del Pilar', 'Dolongan', 'Guintigui-an', 'Guirang', 'Iba', 'Inuntan', 'Lawa-an', 'Loog', 'Loyo', 'Mabini', 'Magallanes', 'Manlilinab', 'May-it', 'Mercado', 'Mongabong', 'New San Agustin', 'Nouvelas Occidental', 'Old San Agustin', 'Palaypay', 'Panugmonon', 'Pelit', 'Roxas', 'Salvacion', 'San Antonio', 'San Fernando', 'Sawa', 'Serum', 'Sugca', 'Sugponon', 'Sulod', 'Tinaogan', 'Tingib', 'Villa Aurora'] },
-    { name: 'Calbayog City', lat: 12.0672, lng: 124.5972, barangays: ['Acedillo', 'Aguit-itan', 'Alibaba', 'Amampacang', 'Anislag', 'Awang East', 'Awang West', 'Ba-ay', 'Bagacay', 'Bagong Lipunan', 'Bantayan', 'Bantayan (Pob.)', 'Barcelona', 'Bariao', 'Binaliw', 'Burgos', 'Cabalogan', 'Cabunga-an', 'Cag-anahaw', 'Cagbanay', 'Cagbobong', 'Caglanipa', 'Calero', 'Capacuhan', 'Carayman', 'Carmen', 'Casaan', 'Cogon', 'Dawel', 'Dawes', 'Diotay', 'Dolores', 'Erenas', 'Espinosa', 'Gadgaran', 'Gasdo', 'Geraga-an', 'Guadalupe', 'Guyam', 'Hibatang', 'Hobong', 'Himamawi', 'Japay', 'Jose A. Roño', 'Kalilihan', 'La Paz', 'Laguna', 'Lalong', 'Lapaan', 'Libertad', 'Lobrigo', 'Longsob', 'Loyo', 'Lugo', 'Mabini', 'Macatingog', 'Mag-ubay', 'Magbay', 'Malaga', 'Malajog', 'Malopalo', 'Mantaong', 'Mantang', 'Matobato', 'Maybog', 'Maypangdan', 'Mendoza', 'Mongol Buntay', 'Naga', 'Naguma', 'Nalibunan', 'Nipa', 'Obrero', 'Olera', 'Omaganhan', 'Osmeña', 'Palanas', 'Palanyogan', 'Palta', 'Pangdan', 'Panlayahan', 'Panonongan', 'Panoypoy', 'Patong', 'Payahan', 'Poblacion 1', 'Poblacion 2', 'Poblacion 3', 'Poblacion 4', 'Poblacion 5', 'Poblacion 6', 'Poblacion 7', 'Poblacion 8', 'Poblacion 9', 'Poblacion 10', 'Poblacion 11', 'Poblacion 12', 'Poblacion 13', 'Poblacion 14', 'Poblacion 15', 'Poblacion 16', 'Poblacion 17', 'Poblacion 18', 'Poblacion 19', 'Poblacion 20', 'Poblacion 21', 'Poblacion 22', 'Poblacion 23', 'Ragay', 'Rizal', 'Sabang', 'Saljagon', 'San Policarpo', 'San Rufino', 'Sansanan', 'Santo Niño', 'Sugod', 'Suluan', 'Tabawan', 'Talalora', 'Talisayan', 'Tarangnan', 'Tinambacan Norte', 'Tinambacan Sur', 'Trinidad', 'Villahermosa', 'Wright'] },
-    { name: 'Calbiga', lat: 11.6167, lng: 125.0167, barangays: ['Antol', 'Bacyaran', 'Barayong', 'Barobo', 'Binongtu-an', 'Boruya', 'Bulao', 'Burabod', 'Caamlongan', 'Calbiga (Pob.)', 'Canbagtic', 'Canticum', 'Daligan', 'Guimbanga', 'Hilabangan', 'Hubasan', 'Literon', 'Lungib', 'Macaalan', 'Malabal', 'Mantang', 'Maybocog', 'Minata', 'Obeño', 'Panalaron', 'Panaytay', 'Patag', 'Polangi', 'Rawis', 'Rizal', 'San Miguel', 'Sinalaban', 'Tabo', 'Tarangnan', 'Timbangan', 'Ubo', 'Villa Aurora', 'Waray', 'Zumarraga'] },
-    { name: 'Catbalogan City', lat: 11.7792, lng: 124.8842, barangays: ['Albalate', 'Bagumbayan', 'Bangon', 'Basiao', 'Buran', 'Cabugawan', 'Cagudalo', 'Cagulanao', 'Cahumpan', 'Calbiga', 'Canlapwas', 'Cogon', 'Daram', 'Dawel', 'Dolores', 'Guindapunan', 'Ibol', 'Iguid', 'Lagundi', 'Libas', 'Lobo', 'Mabini', 'Macatoon', 'Magasbis', 'Malajog', 'Mantang', 'Mombon', 'Muñoz', 'Palanyogon', 'Payao', 'Poblacion 1', 'Poblacion 2', 'Poblacion 3', 'Poblacion 4', 'Poblacion 5', 'Poblacion 6', 'Poblacion 7', 'Poblacion 8', 'Poblacion 9', 'Poblacion 10', 'Rizal', 'Salud', 'San Andres', 'San Pablo', 'San Roque', 'Santo Niño', 'Silanga', 'Sohoton', 'Talisay', 'Tigbawon', 'Vigan', 'Villa Perfecta', 'New Mahayag', 'Old Mahayag', 'Rama', 'San Vicente'] },
-    { name: 'Daram', lat: 11.6333, lng: 124.7833, barangays: ['Poblacion 1 (Hilaba)', 'Poblacion 2 (Malingon)', 'Poblacion 3 (Canti-il)', 'Arawane', 'Astorga', 'Bachao', 'Baclayan', 'Bagacay', 'Bayog', 'Betaug', 'Birawan', 'Bono-anon', 'Buenavista', 'Burgos', 'Cabac', 'Cabil-isan', 'Cabiton-an', 'Cabugao', 'Cagboboto', 'Calawan-an', 'Cambuhay', 'Candugue', 'Campelipa', 'Canloloy', 'Cansaganay', 'Casab-ahan', 'Guindapunan', 'Guintampilan', 'Iquiran', 'Jacopon', 'Losa', 'Lucob-lucob', 'Mabini', 'Macalpe', 'Mandoyucan', 'Marupangdan', 'Mayabay', 'Mongolbongol', 'Nipa', 'Parasan', 'Pondang', 'Poso', 'Real', 'Rizal', 'San Antonio', 'San Jose', 'San Miguel', 'San Roque', 'San Vicente', 'Saugan', 'So-ong', 'Sua', 'Sugod', 'Talisay', 'Tugas', 'Ubo', 'Valles-Bello', 'Yangta'] },
-    { name: 'Gandara', lat: 12.0167, lng: 124.8167, barangays: ['Adela', 'Bacao', 'Balocawe', 'Bangon', 'Bantayan', 'Burabod', 'Cabatuan', 'Cagutsan', 'Cahumpan', 'Calayan', 'Canhumawid', 'Caparangasan', 'Casab-ahan', 'Daram', 'Felipe', 'Gandara (Pob.)', 'Geraca', 'Gutusan', 'Hernani', 'Hinayagan', 'Hinirangan', 'Jabong', 'Jalacutan', 'Lungib', 'Macugo', 'Malino', 'Marupangdan', 'Mataluto', 'Matobato', 'Maybocog', 'Minata', 'Nabong', 'Nalibunan', 'Obeño', 'Panalaron', 'Panaytay', 'Patag', 'Polangi', 'Rawis', 'Rizal', 'San Miguel', 'Sinalaban', 'Tabo', 'Tarangnan', 'Timbangan', 'Ubo', 'Villa Aurora', 'Waray', 'Zumarraga', 'Adlawon', 'Balud', 'Bantigue', 'Bunga', 'Cagmanaba', 'Calbayog', 'Canlisay', 'Dapdap', 'Ginablan', 'Hinabangan', 'Lungsod', 'Mabuhay', 'Magtaon', 'Malobago', 'Napalisan', 'Palale', 'San Isidro', 'San Jose', 'Santo Niño', 'Talisay'] },
-    { name: 'Hinabangan', lat: 11.6833, lng: 125.0833, barangays: ['Bagacay', 'Canacap', 'Carmen', 'Catubig', 'Daram', 'Hinabangan (Pob.)', 'Laygayon', 'Magtangale', 'Malatugawi', 'Pagbabangnan', 'Panitian', 'Rizal', 'San Jose', 'San Juan', 'San Pablo', 'San Vicente', 'Sitio Daku', 'Talahid', 'Ubo', 'Villa Aurora', 'Bagong Silang'] },
-    { name: 'Jiabong', lat: 11.7667, lng: 124.9500, barangays: ['Bactong', 'Barangay 1 (Pob.)', 'Barangay 2 (Pob.)', 'Barangay 3 (Pob.)', 'Barangay 4 (Pob.)', 'Barangay 5 (Pob.)', 'Barangay 6 (Pob.)', 'Barangay 7 (Pob.)', 'Barangay 8 (Pob.)', 'Barangay 9 (Pob.)', 'Barangay 10 (Pob.)', 'Bugho', 'Camantang', 'Candayona', 'Dapdap', 'Dumara', 'Dungca', 'Garcia', 'Guindapunan', 'Hilabangan', 'Jiabong', 'Lungib', 'Malino', 'Mantang', 'Marupangdan', 'Maybocog', 'Minata', 'Nalibunan', 'Obeño', 'Panalaron', 'Patag', 'Polangi', 'Rawis', 'Rizal', 'San Miguel', 'Sinalaban', 'Tabo', 'Tarangnan'] },
-    { name: 'Marabut', lat: 11.1167, lng: 125.2167, barangays: ['Binukyahan', 'Calumpang', 'Canyoyo', 'Catagbacan', 'Dapdap', 'Daro', 'Lalagsan', 'Lipata', 'Marabut (Pob.)', 'Mati', 'Napalisan', 'Osmeña', 'Pili', 'Pinamitinan', 'Rizal', 'San Roque', 'Santo Niño', 'Sawang', 'Sogod', 'Tagalag', 'Talisay', 'Tinabanan', 'Villa Aurora', 'Calapi'] },
-    { name: 'Matuguinao', lat: 12.1333, lng: 124.8833, barangays: ['Barangay 1', 'Barangay 2', 'Barangay 3', 'Barangay 4', 'Barangay 5', 'Barangay 6', 'Barangay 7', 'Barangay 8', 'Barangay 9', 'Barangay 10', 'Barangay 11', 'Barangay 12', 'Barangay 13', 'Barangay 14', 'Barangay 15', 'Barangay 16', 'Barangay 17', 'Barangay 18', 'Barangay 19', 'Barangay 20'] },
-    { name: 'Motiong', lat: 11.7782, lng: 124.9986, barangays: ['Barangay 1 (Pob.)', 'Barangay 2 (Pob.)', 'Barangay 3 (Pob.)', 'Barangay 4 (Pob.)', 'Barangay 5 (Pob.)', 'Barangay 6 (Pob.)', 'Barangay 7 (Pob.)', 'Barangay 8 (Pob.)', 'Barangay 9 (Pob.)', 'Barangay 10 (Pob.)', 'Barangay 11 (Pob.)', 'Barangay 12 (Pob.)', 'Barangay 13 (Pob.)', 'Barangay 14 (Pob.)', 'Barangay 15 (Pob.)', 'Barangay 16 (Pob.)', 'Barangay 17 (Pob.)', 'Barangay 18 (Pob.)', 'Barangay 19 (Pob.)', 'Barangay 20 (Pob.)', 'Barangay 21 (Pob.)', 'Barangay 22 (Pob.)', 'Barangay 23 (Pob.)', 'Barangay 24 (Pob.)', 'Barangay 25 (Pob.)', 'Barangay 26 (Pob.)', 'Barangay 27 (Pob.)', 'Barangay 28 (Pob.)', 'Barangay 29 (Pob.)', 'Barangay 30 (Pob.)'] },
-    { name: 'Paranas (Wright)', lat: 11.7715, lng: 125.0225, barangays: [
-      { name: 'Anagasi', lat: 11.80, lng: 125.05 },
-      { name: 'Apolonia', lat: 11.78, lng: 125.08 },
-      { name: 'Bagsa', lat: 11.79, lng: 125.04 },
-      { name: 'Balbagan', lat: 11.75, lng: 125.06 },
-      { name: 'Bato', lat: 11.77, lng: 125.03 },
-      { name: 'Buray', lat: 11.7753, lng: 125.0387 },
-      { name: 'Cantaguic', lat: 11.73, lng: 125.08 },
-      { name: 'Cantao-an', lat: 11.79, lng: 125.05 },
-      { name: 'Cantato', lat: 11.76, lng: 125.07 },
-      { name: 'Casandig I', lat: 11.74, lng: 125.04 },
-      { name: 'Casandig II', lat: 11.74, lng: 125.05 },
-      { name: 'Cawayan', lat: 11.7931, lng: 125.0318 },
-      { name: 'Concepcion', lat: 11.72, lng: 125.09 },
-      { name: 'Jose Roño', lat: 11.71, lng: 125.10 },
-      { name: 'Lawaan I', lat: 11.70, lng: 125.11 },
-      { name: 'Lawaan II', lat: 11.70, lng: 125.12 },
-      { name: 'Lipata', lat: 11.788, lng: 125.016 },
-      { name: 'Lokilok n', lat: 11.69, lng: 125.13 },
-      { name: 'Mangcal', lat: 11.78, lng: 125.02 },
-      { name: 'Maylobe', lat: 11.72, lng: 125.10 },
-      { name: 'Minarog', lat: 11.79, lng: 125.02 },
-      { name: 'Nawi', lat: 11.71, lng: 125.11 },
-      { name: 'Pabanog', lat: 11.76, lng: 125.01 },
-      { name: 'Paco', lat: 11.75, lng: 125.02 },
-      { name: 'Pagsa-ogan', lat: 11.73, lng: 125.03 },
-      { name: 'Pagsanjan', lat: 11.72, lng: 125.04 },
-      { name: 'Patag', lat: 11.71, lng: 125.05 },
-      { name: 'Pequit', lat: 11.80, lng: 125.03 },
-      { name: 'Poblacion 1', lat: 11.77, lng: 125.02 },
-      { name: 'Poblacion 2', lat: 11.77, lng: 125.02 },
-      { name: 'Poblacion 3', lat: 11.77, lng: 125.02 },
-      { name: 'Poblacion 4', lat: 11.77, lng: 125.02 },
-      { name: 'Poblacion 5', lat: 11.77, lng: 125.02 },
-      { name: 'Poblacion 6', lat: 11.77, lng: 125.02 },
-      { name: 'Salay', lat: 11.78, lng: 125.07 },
-      { name: 'San Isidro', lat: 11.70, lng: 125.06 },
-      { name: 'Santo Niño', lat: 11.69, lng: 125.07 },
-      { name: 'Sulopan', lat: 11.68, lng: 125.08 },
-      { name: 'Tabucan', lat: 11.67, lng: 125.09 },
-      { name: 'Tapul', lat: 11.66, lng: 125.10 },
-      { name: 'Tenani', lat: 11.65, lng: 125.11 },
-      { name: 'Tigbawon', lat: 11.76, lng: 125.00 },
-      { name: 'Tula', lat: 11.64, lng: 125.12 },
-      { name: 'Tutubigan', lat: 11.63, lng: 125.13 },
-    ] },
-    { name: 'Pinabacdao', lat: 11.6167, lng: 124.9833, barangays: ['Barangay 1 (Pob.)', 'Barangay 2 (Pob.)', 'Barangay 3 (Pob.)', 'Barangay 4 (Pob.)', 'Barangay 5 (Pob.)', 'Barangay 6 (Pob.)', 'Barangay 7 (Pob.)', 'Barangay 8 (Pob.)', 'Barangay 9 (Pob.)', 'Barangay 10 (Pob.)', 'Barangay 11 (Pob.)', 'Barangay 12 (Pob.)', 'Barangay 13 (Pob.)', 'Barangay 14 (Pob.)', 'Barangay 15 (Pob.)', 'Barangay 16 (Pob.)', 'Barangay 17 (Pob.)', 'Barangay 18 (Pob.)', 'Barangay 19 (Pob.)', 'Barangay 20 (Pob.)', 'Barangay 21 (Pob.)', 'Barangay 22 (Pob.)', 'Barangay 23 (Pob.)', 'Barangay 24 (Pob.)'] },
-    { name: 'San Jorge', lat: 11.3000, lng: 125.0833, barangays: ['Barangay 1 (Pob.)', 'Barangay 2 (Pob.)', 'Barangay 3 (Pob.)', 'Barangay 4 (Pob.)', 'Barangay 5 (Pob.)', 'Barangay 6 (Pob.)', 'Barangay 7 (Pob.)', 'Barangay 8 (Pob.)', 'Barangay 9 (Pob.)', 'Barangay 10 (Pob.)', 'Barangay 11 (Pob.)', 'Barangay 12 (Pob.)', 'Barangay 13 (Pob.)', 'Barangay 14 (Pob.)', 'Barangay 15 (Pob.)', 'Barangay 16 (Pob.)', 'Barangay 17 (Pob.)', 'Barangay 18 (Pob.)', 'Barangay 19 (Pob.)', 'Barangay 20 (Pob.)', 'Barangay 21 (Pob.)', 'Barangay 22 (Pob.)', 'Barangay 23 (Pob.)', 'Barangay 24 (Pob.)', 'Barangay 25 (Pob.)', 'Barangay 26 (Pob.)', 'Barangay 27 (Pob.)', 'Barangay 28 (Pob.)', 'Barangay 29 (Pob.)', 'Barangay 30 (Pob.)', 'Barangay 31 (Pob.)', 'Barangay 32 (Pob.)', 'Barangay 33 (Pob.)', 'Barangay 34 (Pob.)', 'Barangay 35 (Pob.)', 'Barangay 36 (Pob.)', 'Barangay 37 (Pob.)', 'Barangay 38 (Pob.)', 'Barangay 39 (Pob.)', 'Barangay 40 (Pob.)', 'Barangay 41 (Pob.)'] },
-    { name: 'San Jose de Buan', lat: 12.0500, lng: 125.0333, barangays: ['Barangay 1 (Pob.)', 'Barangay 2 (Pob.)', 'Barangay 3 (Pob.)', 'Barangay 4 (Pob.)', 'Barangay 5 (Pob.)', 'Barangay 6 (Pob.)', 'Barangay 7 (Pob.)', 'Barangay 8 (Pob.)', 'Barangay 9 (Pob.)', 'Barangay 10 (Pob.)', 'Barangay 11 (Pob.)', 'Barangay 12 (Pob.)', 'Barangay 13 (Pob.)', 'Barangay 14 (Pob.)'] },
-    { name: 'San Sebastian', lat: 11.7000, lng: 125.0167, barangays: ['Barangay 1 (Pob.)', 'Barangay 2 (Pob.)', 'Barangay 3 (Pob.)', 'Barangay 4 (Pob.)', 'Barangay 5 (Pob.)', 'Barangay 6 (Pob.)', 'Barangay 7 (Pob.)', 'Barangay 8 (Pob.)', 'Barangay 9 (Pob.)', 'Barangay 10 (Pob.)', 'Barangay 11 (Pob.)', 'Barangay 12 (Pob.)', 'Barangay 13 (Pob.)', 'Barangay 14 (Pob.)', 'Barangay 15 (Pob.)', 'Barangay 16 (Pob.)', 'Barangay 17 (Pob.)', 'Barangay 18 (Pob.)', 'Barangay 19 (Pob.)', 'Barangay 20 (Pob.)'] },
-    { name: 'Santa Rita', lat: 11.4500, lng: 124.9333, barangays: ['Anibong', 'Aslum', 'Bagolibas', 'Balud', 'Bantigue', 'Bunga', 'Cagmanaba', 'Calbayog', 'Canlisay', 'Dapdap', 'Ginablan', 'Hinabangan', 'Lungsod', 'Mabuhay', 'Magtaon', 'Malobago', 'Napalisan', 'Palale', 'Santa Rita (Pob.)', 'San Isidro', 'San Jose', 'Santo Niño', 'Talisay', 'Villa Aurora', 'Bagacay', 'Burabod', 'Cabatuan', 'Cagutsan', 'Calayan', 'Canhumawid', 'Caparangasan', 'Casab-ahan', 'Felipe', 'Geraca', 'Gutusan', 'Hernani', 'Hinayagan', 'Hinirangan', 'Jabong', 'Jalacutan', 'Macugo', 'Malino', 'Marupangdan', 'Mataluto', 'Matobato'] },
-    { name: 'Santo Niño', lat: 11.9833, lng: 124.4667, barangays: ['Barangay 1 (Pob.)', 'Barangay 2 (Pob.)', 'Barangay 3 (Pob.)', 'Barangay 4 (Pob.)', 'Barangay 5 (Pob.)', 'Barangay 6 (Pob.)', 'Barangay 7 (Pob.)', 'Barangay 8 (Pob.)', 'Barangay 9 (Pob.)', 'Barangay 10 (Pob.)', 'Barangay 11 (Pob.)', 'Barangay 12 (Pob.)', 'Barangay 13 (Pob.)', 'Barangay 14 (Pob.)', 'Barangay 15 (Pob.)', 'Barangay 16 (Pob.)', 'Barangay 17 (Pob.)', 'Barangay 18 (Pob.)', 'Barangay 19 (Pob.)', 'Barangay 20 (Pob.)'] },
-    { name: 'Tagapul-an', lat: 11.9500, lng: 124.8333, barangays: ['Barangay 1 (Pob.)', 'Barangay 2 (Pob.)', 'Barangay 3 (Pob.)', 'Barangay 4 (Pob.)', 'Barangay 5 (Pob.)', 'Barangay 6 (Pob.)', 'Barangay 7 (Pob.)', 'Barangay 8 (Pob.)', 'Barangay 9 (Pob.)', 'Barangay 10 (Pob.)', 'Barangay 11 (Pob.)', 'Barangay 12 (Pob.)', 'Barangay 13 (Pob.)', 'Barangay 14 (Pob.)', 'Barangay 15 (Pob.)'] },
-    { name: 'Talalora', lat: 11.5333, lng: 124.8333, barangays: ['Barangay 1 (Pob.)', 'Barangay 2 (Pob.)', 'Barangay 3 (Pob.)', 'Barangay 4 (Pob.)', 'Barangay 5 (Pob.)', 'Barangay 6 (Pob.)', 'Barangay 7 (Pob.)', 'Barangay 8 (Pob.)', 'Barangay 9 (Pob.)', 'Barangay 10 (Pob.)', 'Barangay 11 (Pob.)', 'Barangay 12 (Pob.)', 'Barangay 13 (Pob.)', 'Barangay 14 (Pob.)', 'Barangay 15 (Pob.)'] },
-    { name: 'Tarangnan', lat: 11.9000, lng: 124.7500, barangays: ['Barangay 1 (Pob.)', 'Barangay 2 (Pob.)', 'Barangay 3 (Pob.)', 'Barangay 4 (Pob.)', 'Barangay 5 (Pob.)', 'Barangay 6 (Pob.)', 'Barangay 7 (Pob.)', 'Barangay 8 (Pob.)', 'Barangay 9 (Pob.)', 'Barangay 10 (Pob.)', 'Barangay 11 (Pob.)', 'Barangay 12 (Pob.)', 'Barangay 13 (Pob.)', 'Barangay 14 (Pob.)', 'Barangay 15 (Pob.)', 'Barangay 16 (Pob.)', 'Barangay 17 (Pob.)', 'Barangay 18 (Pob.)', 'Barangay 19 (Pob.)', 'Barangay 20 (Pob.)', 'Barangay 21 (Pob.)', 'Barangay 22 (Pob.)', 'Barangay 23 (Pob.)', 'Barangay 24 (Pob.)'] },
-    { name: 'Villareal', lat: 11.5667, lng: 124.9333, barangays: ['Barangay 1 (Pob.)', 'Barangay 2 (Pob.)', 'Barangay 3 (Pob.)', 'Barangay 4 (Pob.)', 'Barangay 5 (Pob.)', 'Barangay 6 (Pob.)', 'Barangay 7 (Pob.)', 'Barangay 8 (Pob.)', 'Barangay 9 (Pob.)', 'Barangay 10 (Pob.)', 'Barangay 11 (Pob.)', 'Barangay 12 (Pob.)', 'Barangay 13 (Pob.)', 'Barangay 14 (Pob.)', 'Barangay 15 (Pob.)', 'Barangay 16 (Pob.)', 'Barangay 17 (Pob.)', 'Barangay 18 (Pob.)', 'Barangay 19 (Pob.)', 'Barangay 20 (Pob.)'] },
-    { name: 'Zumarraga', lat: 11.6333, lng: 124.8500, barangays: ['Barangay 1 (Pob.)', 'Barangay 2 (Pob.)', 'Barangay 3 (Pob.)', 'Barangay 4 (Pob.)', 'Barangay 5 (Pob.)', 'Barangay 6 (Pob.)', 'Barangay 7 (Pob.)', 'Barangay 8 (Pob.)', 'Barangay 9 (Pob.)', 'Barangay 10 (Pob.)', 'Barangay 11 (Pob.)', 'Barangay 12 (Pob.)', 'Barangay 13 (Pob.)', 'Barangay 14 (Pob.)', 'Barangay 15 (Pob.)', 'Barangay 16 (Pob.)', 'Barangay 17 (Pob.)', 'Barangay 18 (Pob.)', 'Barangay 19 (Pob.)', 'Barangay 20 (Pob.)'] }
-  ];
+  // Municipalities (SAMELCO II – Samar) - Use shared data from municipalities-data.js (16 municipalities from GeoJSON)
+  var municipalities = window.SAMELCO_MUNICIPALITIES || [];
   var municipalityDataset = Array.isArray(window.SAMELCO_MUNICIPALITIES) && window.SAMELCO_MUNICIPALITIES.length
     ? window.SAMELCO_MUNICIPALITIES
     : municipalities;
@@ -325,6 +254,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (/invalid email or password/i.test(msg)) {
       return 'Invalid email or password.';
     }
+    if (/inactive/i.test(msg)) {
+      return msg;
+    }
     return fallback + ': ' + msg;
   }
 
@@ -396,13 +328,16 @@ document.addEventListener('DOMContentLoaded', function () {
           p_email: normalizedEmail,
           p_password: password
         });
+        console.log('Login result:', loginResult);
         var user = getFirstRow(loginResult);
         if (!user) {
+          console.error('No user found in login result');
           throw new Error('Invalid email or password');
         }
         setCustomerSession(user);
         window.location.href = 'user-dashboard.html';
       } catch (err) {
+        console.error('Login error:', err);
         alert(buildCustomerAuthErrorMessage(err, 'Failed to login'));
       }
     });

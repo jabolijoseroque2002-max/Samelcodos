@@ -8,6 +8,68 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    /* New styles for About page features */
+    .about-section-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      color: #8b2a2a;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    .section-subtitle {
+      color: #64748b;
+      font-size: 1.1rem;
+    }
+    
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 4rem;
+    }
+    .value-item {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease;
+      text-align: center;
+      border: 1px solid #f1f5f9;
+    }
+    .value-item:hover {
+      transform: translateY(-5px);
+    }
+    .value-icon {
+      width: 40px;
+      height: 40px;
+      background: #8b2a2a;
+      color: #fff;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0 auto 1.25rem;
+    }
+    .value-item h3 {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      color: #1e293b;
+    }
+    .value-item p {
+      color: #64748b;
+      line-height: 1.5;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
 <body class="page-about">
   <div class="bg-image" aria-hidden="true"></div>
@@ -22,7 +84,7 @@
         </span>
         <span class="nav-logo-text">
           <span class="nav-logo-title">SAMELCO II</span>
-          <span class="nav-logo-sub">SAMAR ELECTRIC COOPERATIVE, INC.</span>
+          <span class="nav-logo-sub">SAMAR II ELECTRIC COOPERATIVE, INC.</span>
         </span>
       </a>
       <div class="nav-right">
@@ -45,10 +107,9 @@
       <div class="about-banner">
         <div class="about-banner-text">
           <span class="about-banner-label">Committed to Service</span>
-          <span class="about-banner-sub">Serving households and businesses through four branch offices and 26 municipalities.</span>
+          <span class="about-banner-sub">Serving households and businesses through four branch offices and 16 municipalities.</span>
         </div>
         <div class="about-banner-actions">
-          <a href="user-dashboard.html" class="nav-btn nav-btn-report">Report Issue</a>
           <a href="contact.html" class="nav-btn nav-btn-cta">Contact Us</a>
         </div>
       </div>
@@ -64,14 +125,57 @@
         </div>
       </div>
 
-      <div class="about-stats">
-        <div class="about-stat-card">
-          <span class="about-stat-label">Municipalities</span>
-          <strong class="about-stat-value">26</strong>
+      <div class="about-section-header">
+        <h2 class="section-title">Core Values</h2>
+        <p class="section-subtitle">The principles that guide our service to the community.</p>
+      </div>
+
+      <div class="values-grid">
+        <div class="value-item">
+          <div class="value-icon">S</div>
+          <h3>Service Excellence</h3>
+          <p>Delivering high-quality electric service and customer support.</p>
         </div>
-        <div class="about-stat-card">
+        <div class="value-item">
+          <div class="value-icon">A</div>
+          <h3>Accountability</h3>
+          <p>Taking responsibility for our actions and decisions.</p>
+        </div>
+        <div class="value-item">
+          <div class="value-icon">M</div>
+          <h3>Mutual Respect</h3>
+          <p>Fostering a culture of dignity and understanding.</p>
+        </div>
+        <div class="value-item">
+          <div class="value-icon">E</div>
+          <h3>Ethical Conduct</h3>
+          <p>Operating with integrity and transparency.</p>
+        </div>
+        <div class="value-item">
+          <div class="value-icon">L</div>
+          <h3>Loyalty</h3>
+          <p>Faithfulness to our mission and the consumers we serve.</p>
+        </div>
+        <div class="value-item">
+          <div class="value-icon">C</div>
+          <h3>Commitment</h3>
+          <p>Dedicated to the growth and welfare of Samar.</p>
+        </div>
+        <div class="value-item">
+          <div class="value-icon">O</div>
+          <h3>Objectivity</h3>
+          <p>Maintaining impartiality and fairness in all our dealings.</p>
+        </div>
+      </div>
+
+      <div class="about-stats">
+        <div class="about-stat-card" id="municipalities-card" style="cursor: pointer;">
+          <span class="about-stat-label">Municipalities</span>
+          <strong class="about-stat-value" id="municipality-count-display">0</strong>
+        </div>
+        <div class="about-stat-card" id="branches-card" style="cursor: pointer;">
           <span class="about-stat-label">Branch Offices</span>
-          <strong class="about-stat-value">4</strong>
+          <strong class="about-stat-value" id="branches-count-display">0</strong>
         </div>
         <div class="about-stat-card">
           <span class="about-stat-label">Coverage</span>
@@ -79,26 +183,28 @@
         </div>
       </div>
 
-      <div class="about-faq-section" style="margin-top: 5rem;">
-        <h2 class="about-card-title" style="text-align: center; margin-bottom: 2.5rem;">Frequently Asked Questions</h2>
-        <div class="faq-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
-          <div class="about-card" style="padding: 1.5rem;">
-            <h3 style="font-size: 1.1rem; color: #8b2a2a; margin-bottom: 0.75rem;">How do I report a power outage?</h3>
-            <p style="font-size: 0.95rem; color: #475569;">You can report it through our "Report Issue" page, or call our emergency hotline numbers found on the Contact page.</p>
-          </div>
-          <div class="about-card" style="padding: 1.5rem;">
-            <h3 style="font-size: 1.1rem; color: #8b2a2a; margin-bottom: 0.75rem;">What information do I need to report?</h3>
-            <p style="font-size: 0.95rem; color: #475569;">Please provide your account number, exact location, and a brief description of the issue (e.g., broken wire, no power, flickering lights).</p>
-          </div>
-          <div class="about-card" style="padding: 1.5rem;">
-            <h3 style="font-size: 1.1rem; color: #8b2a2a; margin-bottom: 0.75rem;">Is the reporting system available 24/7?</h3>
-            <p style="font-size: 0.95rem; color: #475569;">Yes, our online reporting system is available 24/7. Our emergency teams are also on standby for urgent repairs.</p>
-          </div>
-          <div class="about-card" style="padding: 1.5rem;">
-            <h3 style="font-size: 1.1rem; color: #8b2a2a; margin-bottom: 0.75rem;">How can I track my report?</h3>
-            <p style="font-size: 0.95rem; color: #475569;">Once submitted, you can check the status of your report by contacting our member services or checking for updates if provided.</p>
+      <!-- Municipalities Modal -->
+      <div id="municipalities-modal" class="modal modal-overlay" style="display:none; position:fixed; z-index:10000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px);">
+        <div class="modal-content modal-content-styled" style="background:#fff; margin:5% auto; padding:2rem; border-radius:24px; width:95%; max-width:600px; max-height:80vh; overflow-y:auto; position:relative; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);">
+          <span class="close-modal" id="close-municipalities" style="position:absolute; right:1.5rem; top:1rem; font-size:2rem; cursor:pointer; color:#64748b;">&times;</span>
+          <h2 style="color:#8b2a2a; font-family:'Outfit', sans-serif; font-weight:700; margin-bottom:1.5rem;">List of Municipalities</h2>
+          <div id="municipalities-list-container" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:1rem; text-align:left;">
+            <!-- Will be populated by JS -->
           </div>
         </div>
+      </div>
+
+      <!-- Branches Modal -->
+      <div id="branches-modal" class="modal modal-overlay" style="display:none; position:fixed; z-index:10000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px);">
+        <div class="modal-content modal-content-styled" style="background:#fff; margin:10% auto; padding:2rem; border-radius:24px; width:95%; max-width:500px; position:relative; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);">
+          <span class="close-modal" id="close-branches" style="position:absolute; right:1.5rem; top:1rem; font-size:2rem; cursor:pointer; color:#64748b;">&times;</span>
+          <h2 style="color:#8b2a2a; font-family:'Outfit', sans-serif; font-weight:700; margin-bottom:1.5rem;">Our Branch Offices</h2>
+          <div id="branches-list-container" style="display:flex; flex-direction:column; gap:1rem; text-align:left;">
+            <!-- Will be populated by JS -->
+          </div>
+        </div>
+      </div>
+
       </div>
     </div>
   </section>
@@ -129,7 +235,6 @@
         <ul>
           <li><a href="about.html">About Us</a></li>
           <li><a href="contact.html">Contact Support</a></li>
-          <li><a href="report.html">Report an Issue</a></li>
         </ul>
       </div>
       <div class="footer-contact">
@@ -162,6 +267,7 @@
   </button>
 
   <script src="../js/coverage-samelco-geojson.js"></script>
+  <script src="../js/municipalities-data.js"></script>
   <script src="../js/about.js"></script>
   <script>
     // Back to Top functionality

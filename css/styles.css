@@ -1064,6 +1064,25 @@ body.page-about .nav {
   background: linear-gradient(135deg, #059669 0%, #34d399 100%) !important;
 }
 
+.marker-pin-fade-out {
+  animation: marker-pin-fade-out 3s forwards !important;
+}
+
+@keyframes marker-pin-fade-out {
+  0% {
+    opacity: 1;
+    transform: rotate(-45deg) scale(1);
+  }
+  70% {
+    opacity: 1;
+    transform: rotate(-45deg) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(-45deg) scale(0.5);
+  }
+}
+
 @keyframes marker-pin-blink {
   0%, 100% {
     opacity: 1;
@@ -1664,7 +1683,26 @@ body.page-about .nav {
   position: relative;
 }
 .notif-btn:hover { background: #f9fafb; }
-.notif-icon { font-size: 1.25rem; line-height: 1; color: #111827; }
+.notif-icon-svg {
+  width: 24px;
+  height: 24px;
+  color: #4b5563;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+.notif-btn:hover .notif-icon-svg {
+  color: #111827;
+  transform: scale(1.1);
+}
+.notif-btn.has-new .notif-icon-svg {
+  animation: bell-ring 1.5s ease-in-out infinite;
+  color: #dc2626;
+}
+@keyframes bell-ring {
+  0%, 100% { transform: rotate(0); }
+  10%, 30%, 50%, 70% { transform: rotate(15deg); }
+  20%, 40%, 60%, 80% { transform: rotate(-15deg); }
+  90% { transform: rotate(0); }
+}
 .notif-badge {
   position: absolute;
   top: -6px;
@@ -6811,3 +6849,169 @@ body.page-user-dashboard .user-panel-form {
     width: 100%;
   }
 }
+
+/* Report History Styles */
+.report-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.history-item {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(139, 42, 42, 0.1);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.history-item:hover {
+  background: #fff;
+  border-color: rgba(139, 42, 42, 0.3);
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.history-item-main {
+  flex: 1;
+}
+
+.history-item-title {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+}
+
+.history-item-sub {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.history-item-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  min-width: 100px;
+}
+
+.history-status {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+
+.status-pending { background: #fef3c7; color: #92400e; }
+.status-ontheway { background: #dcfce7; color: #166534; }
+.status-resolved { background: #e0f2fe; color: #075985; }
+
+.history-date {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+
+/* Scheduled Interruptions Styles */
+.scheduled-interruptions {
+  margin-top: 4rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 24px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.scheduled-interruptions .section-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.scheduled-interruptions h2 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.scheduled-interruptions p {
+  color: #64748b;
+}
+
+.interruptions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.interruption-card {
+  background: #fff;
+  border: 1px solid rgba(139, 42, 42, 0.1);
+  border-radius: 16px;
+  padding: 1.5rem;
+  position: relative;
+  transition: transform 0.2s ease;
+}
+
+.interruption-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
+}
+
+.interruption-date {
+  font-weight: 700;
+  color: #8b2a2a;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.interruption-time {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.interruption-time::before {
+  content: "??";
+}
+
+.interruption-location {
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.interruption-location::before {
+  content: "??";
+}
+
+.interruption-reason {
+  font-size: 0.9rem;
+  color: #475569;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.interruption-status {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  background: #fff7ed;
+  color: #c2410c;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+
