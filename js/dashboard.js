@@ -898,6 +898,98 @@ document.addEventListener('DOMContentLoaded', function () {
             '<p style="margin:4px 0;"><strong>Feeder:</strong> ' + (props['FDR NUMBER'] || 'N/A') + '</p>' +
             '</div>';
           layer.bindPopup(popupContent);
+        }
+        layer.on({
+          mouseover: function(e) {
+            var l = e.target;
+            l.setStyle(getCoverageFeatureHoverStyle(l.feature));
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+              l.bringToFront();
+            }
+          },
+          mouseout: function(e) {
+            if (coverageLayer) {
+              coverageLayer.resetStyle(e.target);
+            }
+          },
+          click: function(e) {
+            map.fitBounds(e.target.getBounds());
+          }
+        });
+      }
+    }).addTo(map);
+
+    var samarBounds = coverageLayer.getBounds();
+    focusMapOnSamar(samarBounds);
+    addSamarMask(map, window.SAMELCO_COVERAGE_GEOJSON);
+  }
+
+  // --- Map Enhancements (Weather & GPS Teams) ---
+  
+  // 1. Weather & Typhoon Radar (RainViewer)
+  var weatherLayer = L.layerGroup();
+  
+  // Fetch latest radar timestamp
+  fetch('https://api.rainviewer.com/public/weather-maps.json')
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
+      if (data && data.radar && data.radar.past && data.radar.past.length > 0) {
+        var latest = data.radar.past[data.radar.past.length - 1];
+        var radarTileLayer = L.tileLayer('https://tilecache.rainviewer.com/v2/radar/' + latest.time + '/256/{z}/{x}/{y}/2/1_1.png', {
+          opacity: 0.65,
+          attribution: 'Weather data © RainViewer',
+          zIndex: 400 // Ensure it sits above the map coverage but below markers
+        });
+        weatherLayer.addLayer(radarTileLayer);
+      }
+    })
+    .catch(function(err) { console.error('Failed to load weather radar data', err); });
+
+  // 2. Simulated Live GPS Tracking of Field Teams
+  var teamsLayer = L.layerGroup();
+  
+  // Dummy teams initialized near SAMELCO coverage municipalities
+  var fieldTeams = [
+    { id: 1, name: 'Team Alpha (Basey)', lat: 11.28, lng: 125.06 },
+    { id: 2, name: 'Team Bravo (Catbalogan)', lat: 11.78, lng: 124.88 },
+    { id: 3, name: 'Team Charlie (Calbiga)', lat: 11.61, lng: 125.01 },
+    { id: 4, name: 'Team Delta (Paranas)', lat: 11.77, lng: 125.02 }
+  ];
+
+  var teamIcon = L.divIcon({
+    html: '<div style="font-size:18px; background:#fff; border:2px solid #2e7d32; border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.5);">🚚</div>',
+    className: 'field-team-marker',
+    iconSize: [30, 30],
+    iconAnchor: [15, 15]
+  });
+
+  fieldTeams.forEach(function(team) {
+    team.marker = L.marker([team.lat, team.lng], { icon: teamIcon })
+      .bindPopup('<strong>' + team.name + '</strong><br>Status: <span style="color:#2e7d32;">On Duty</span><br>Speed: ~40 km/h')
+      .addTo(teamsLayer);
+  });
+
+  // Simulate movement (random walk)
+  setInterval(function() {
+    fieldTeams.forEach(function(team) {
+      if (team.marker && map.hasLayer(teamsLayer)) {
+        // Randomly adjust coordinates slightly
+        team.lat += (Math.random() - 0.5) * 0.003;
+        team.lng += (Math.random() - 0.5) * 0.003;
+        team.marker.setLatLng([team.lat, team.lng]);
+      }
+    });
+  }, 3000);
+
+  // Add Layers Control to the Map
+  var overlayMaps = {
+    "Weather Radar (RainViewer)": weatherLayer,
+    "Live Field Teams GPS": teamsLayer
+  };
+  
+  L.control.layers(null, overlayMaps, { position: 'topright' }).addTo(map);
+
+  // End Map Enhancements
           
           layer.on({
             mouseover: function(e) {
