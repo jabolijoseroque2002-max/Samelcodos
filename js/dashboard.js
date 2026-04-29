@@ -736,11 +736,45 @@ document.addEventListener('DOMContentLoaded', function () {
       
       div.innerHTML = '<h4 style="margin:0 0 5px; font-size:13px; font-weight:600;">Municipalities</h4>';
       
+      var itemsContainer = L.DomUtil.create('div', '');
       var names = Object.keys(municipalityColorMap).sort();
       for (var i = 0; i < names.length; i++) {
         var color = municipalityColorMap[names[i]];
-        div.innerHTML += '<i style="background:' + color + '; width:14px; height:14px; display:inline-block; border-radius:3px; margin-right:8px; opacity:0.7; vertical-align:middle;"></i> <span style="vertical-align:middle;">' + names[i] + '</span><br>';
+        
+        var itemDiv = L.DomUtil.create('div', 'legend-item');
+        itemDiv.style.cursor = 'pointer';
+        itemDiv.style.padding = '2px 0';
+        itemDiv.setAttribute('data-name', names[i]);
+        
+        itemDiv.innerHTML = '<i style="background:' + color + '; width:14px; height:14px; display:inline-block; border-radius:3px; margin-right:8px; opacity:0.7; vertical-align:middle;"></i> <span style="vertical-align:middle;">' + names[i] + '</span>';
+        
+        itemDiv.addEventListener('click', function(e) {
+          var name = this.getAttribute('data-name');
+          var mInfo = municipalities.find(function(m) { return m.name === name; });
+          if (mInfo && window.map) {
+            window.map.setView([mInfo.lat, mInfo.lng], 11);
+            
+            // Highlight in sidebar
+            var list = document.getElementById('municipalities-sidebar-list');
+            if (list) {
+              var sidebarItems = list.querySelectorAll('.sidebar-municipality-item');
+              for (var j = 0; j < sidebarItems.length; j++) {
+                if (sidebarItems[j].getAttribute('data-name') === name) {
+                  // Only click if it's not already active
+                  if (!sidebarItems[j].classList.contains('is-active')) {
+                    sidebarItems[j].click();
+                  }
+                  sidebarItems[j].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                  break;
+                }
+              }
+            }
+          }
+        });
+        
+        itemsContainer.appendChild(itemDiv);
       }
+      div.appendChild(itemsContainer);
       L.DomEvent.disableClickPropagation(div);
       L.DomEvent.disableScrollPropagation(div);
       return div;
