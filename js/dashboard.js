@@ -698,6 +698,56 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var municipalityColorMap = buildMunicipalityColorMap(window.SAMELCO_COVERAGE_GEOJSON);
 
+  // Update sidebar with color swatches
+  var sidebarItemsToColor = document.querySelectorAll('.sidebar-municipality-item');
+  sidebarItemsToColor.forEach(function(item) {
+    var name = item.getAttribute('data-name');
+    if (name) {
+      var color = municipalityColorMap[name] || '#d4a373';
+      var header = item.querySelector('h4');
+      if (header) {
+        var swatch = document.createElement('span');
+        swatch.style.display = 'inline-block';
+        swatch.style.width = '12px';
+        swatch.style.height = '12px';
+        swatch.style.borderRadius = '50%';
+        swatch.style.backgroundColor = color;
+        swatch.style.marginRight = '6px';
+        swatch.style.verticalAlign = 'middle';
+        header.insertBefore(swatch, header.firstChild);
+      }
+    }
+  });
+
+  // Add map legend
+  if (typeof L !== 'undefined' && map) {
+    var mapLegend = L.control({position: 'bottomleft'});
+    mapLegend.onAdd = function (map) {
+      var div = L.DomUtil.create('div', 'info legend');
+      div.style.backgroundColor = '#fff';
+      div.style.padding = '10px';
+      div.style.borderRadius = '5px';
+      div.style.boxShadow = '0 0 15px rgba(0,0,0,0.2)';
+      div.style.maxHeight = '250px';
+      div.style.overflowY = 'auto';
+      div.style.fontSize = '12px';
+      div.style.color = '#333';
+      div.style.lineHeight = '18px';
+      
+      div.innerHTML = '<h4 style="margin:0 0 5px; font-size:13px; font-weight:600;">Municipalities</h4>';
+      
+      var names = Object.keys(municipalityColorMap).sort();
+      for (var i = 0; i < names.length; i++) {
+        var color = municipalityColorMap[names[i]];
+        div.innerHTML += '<i style="background:' + color + '; width:14px; height:14px; display:inline-block; border-radius:3px; margin-right:8px; opacity:0.7; vertical-align:middle;"></i> <span style="vertical-align:middle;">' + names[i] + '</span><br>';
+      }
+      L.DomEvent.disableClickPropagation(div);
+      L.DomEvent.disableScrollPropagation(div);
+      return div;
+    };
+    mapLegend.addTo(map);
+  }
+
   function getMunicipalityFillColor(name) {
     return municipalityColorMap[name] || '#d4a373';
   }
