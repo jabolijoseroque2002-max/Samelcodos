@@ -734,7 +734,7 @@ document.addEventListener('DOMContentLoaded', function () {
       div.style.color = '#000';
       div.style.lineHeight = '18px';
       
-      div.innerHTML = '<h4 style="margin:0 0 5px; font-size:13px; font-weight:600;">Municipalities</h4>';
+      div.innerHTML = '<h4 style="margin:0 0 5px; font-size:13px; font-weight:600; color:#000;">Municipalities</h4>';
       
       var itemsContainer = L.DomUtil.create('div', '');
       var names = Object.keys(municipalityColorMap).sort();
@@ -744,6 +744,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var itemDiv = L.DomUtil.create('div', 'legend-item');
         itemDiv.style.cursor = 'pointer';
         itemDiv.style.padding = '2px 0';
+        itemDiv.style.color = '#000';
         itemDiv.setAttribute('data-name', names[i]);
         
         itemDiv.innerHTML = '<i style="background:' + color + '; width:14px; height:14px; display:inline-block; border-radius:3px; margin-right:8px; opacity:0.7; vertical-align:middle;"></i> <span style="vertical-align:middle;">' + names[i] + '</span>';
