@@ -899,6 +899,7 @@ document.addEventListener('DOMContentLoaded', function () {
             '</div>';
           layer.bindPopup(popupContent);
         }
+        
         layer.on({
           mouseover: function(e) {
             var l = e.target;
@@ -916,12 +917,32 @@ document.addEventListener('DOMContentLoaded', function () {
             map.fitBounds(e.target.getBounds());
           }
         });
+
+        // Add barangay label to the barangayLabelLayer
+        if (feature.properties && feature.properties.NAME_3) {
+          var bounds = layer.getBounds();
+          if (bounds.isValid()) {
+            var center = bounds.getCenter();
+            L.marker(center, {
+              icon: L.divIcon({
+                className: 'map-label barangay-label',
+                html: '<span>' + feature.properties.NAME_3 + '</span>',
+                iconSize: [120, 18],
+                iconAnchor: [60, 9]
+              }),
+              interactive: false,
+              pane: 'markerPane'
+            }).addTo(barangayLabelLayer);
+          }
+        }
       }
     }).addTo(map);
 
     var samarBounds = coverageLayer.getBounds();
     focusMapOnSamar(samarBounds);
     addSamarMask(map, window.SAMELCO_COVERAGE_GEOJSON);
+  } else {
+    fitMapToServiceArea();
   }
 
   // --- Map Enhancements (Weather & GPS Teams) ---
@@ -990,45 +1011,6 @@ document.addEventListener('DOMContentLoaded', function () {
   L.control.layers(null, overlayMaps, { position: 'topright' }).addTo(map);
 
   // End Map Enhancements
-          
-          layer.on({
-            mouseover: function(e) {
-              var l = e.target;
-              l.setStyle(getCoverageFeatureHoverStyle(feature));
-            },
-            mouseout: function(e) {
-              var l = e.target;
-              l.setStyle(getCoverageFeatureStyle(feature));
-            }
-          });
-
-          // Add barangay label to the barangayLabelLayer
-          if (props.NAME_3) {
-            var bounds = layer.getBounds();
-            if (bounds.isValid()) {
-              var center = bounds.getCenter();
-              L.marker(center, {
-                icon: L.divIcon({
-                  className: 'map-label barangay-label',
-                  html: '<span>' + props.NAME_3 + '</span>',
-                  iconSize: [120, 18],
-                  iconAnchor: [60, 9]
-                }),
-                interactive: false,
-                pane: 'markerPane'
-              }).addTo(barangayLabelLayer);
-            }
-          }
-        }
-      }
-    });
-
-    addSamarMask(map, window.SAMELCO_COVERAGE_GEOJSON);
-    coverageLayer.addTo(map);
-    focusMapOnSamar(coverageLayer.getBounds());
-  } else {
-    fitMapToServiceArea();
-  }
 
   // Initial update of labels
   updateMapLabels();
