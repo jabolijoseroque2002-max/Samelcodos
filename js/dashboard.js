@@ -731,7 +731,7 @@ document.addEventListener('DOMContentLoaded', function () {
       div.style.maxHeight = '250px';
       div.style.overflowY = 'auto';
       div.style.fontSize = '12px';
-      div.style.color = '#333';
+      div.style.color = '#000';
       div.style.lineHeight = '18px';
       
       div.innerHTML = '<h4 style="margin:0 0 5px; font-size:13px; font-weight:600;">Municipalities</h4>';
