@@ -224,6 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   var logoutBtn = document.getElementById('user-dashboard-logout');
+  var profileBtn = document.getElementById('user-dashboard-profile');
   var onWayToastCloseBtn = document.getElementById('user-onway-toast-close');
   if (logoutBtn) {
     logoutBtn.hidden = !localStorage.getItem('userName');
@@ -235,6 +236,9 @@ document.addEventListener('DOMContentLoaded', function () {
       localStorage.removeItem('personnelSession');
       window.location.href = 'index.html';
     });
+  }
+  if (profileBtn) {
+    profileBtn.hidden = !localStorage.getItem('userName');
   }
   if (onWayToastCloseBtn) {
     onWayToastCloseBtn.addEventListener('click', function () {

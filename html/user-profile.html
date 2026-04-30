@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self' https://tujouacwrtozuqnunizm.supabase.co https://nominatim.openstreetmap.org;">
+  <title>User Profile - SAMELCO II</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .profile-panel {
+      max-width: 900px;
+      margin: 1rem auto;
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05), 0 4px 6px rgba(0,0,0,0.02);
+      border: 1px solid rgba(255,255,255,0.6);
+      width: 100%;
+    }
+    .profile-layout {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+    @media (max-width: 768px) {
+      .profile-layout {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+    }
+    .profile-sidebar {
+      text-align: center;
+      padding-right: 2rem;
+      border-right: 1px solid #e2e8f0;
+    }
+    @media (max-width: 768px) {
+      .profile-sidebar {
+        padding-right: 0;
+        border-right: none;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 1rem;
+      }
+    }
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 600;
+      margin: 0 auto 1rem;
+      box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+      font-family: 'Outfit', sans-serif;
+    }
+    .profile-header h1 {
+      margin-bottom: 0.25rem;
+      color: #0f172a;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+    }
+    .profile-header p {
+      color: #64748b;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+    }
+    .profile-form-area {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .profile-form .input-wrap {
+      margin-bottom: 0;
+      background: white;
+    }
+    .profile-form .input-wrap input,
+    .profile-form .input-wrap select {
+      background-color: transparent;
+      color: #0f172a !important; /* Force dark text color */
+    }
+    .profile-form .input-wrap input::placeholder {
+      color: transparent; /* Assuming placeholder logic handles label floating */
+    }
+    .profile-form .input-wrap input:disabled,
+    .profile-form .input-wrap select:disabled {
+      background-color: #f8fafc;
+      color: #64748b !important;
+      cursor: not-allowed;
+    }
+    .profile-form .input-wrap label {
+      color: #475569 !important; /* Force dark label color instead of yellow/white */
+    }
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 600px) {
+      .profile-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+    }
+    .profile-form button {
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 0.8rem;
+      font-size: 1rem;
+      border-radius: 8px;
+    }
+    .profile-section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      color: #0f172a;
+      margin-bottom: 0.25rem;
+    }
+    .profile-section-desc {
+      color: #64748b;
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+    }
+    .divider {
+      margin: 1.5rem 0;
+      border: 0;
+      border-top: 1px solid #e2e8f0;
+    }
+    .toast-message {
+      padding: 0.8rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      display: none;
+      text-align: left;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      animation: slideDown 0.3s ease-out forwards;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .toast-success {
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+    .toast-error {
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+    .loading-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 16px;
+      z-index: 10;
+      transition: opacity 0.3s;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #e2e8f0;
+      border-top-color: #ef4444;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body class="page-user-dashboard">
+  <div class="bg-image" aria-hidden="true"></div>
+  <div class="noise"></div>
+  <div class="orb orb-1"></div>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="nav-logo-icon" aria-hidden="true">
+          <img src="../assets/images/logo.png" alt="SAMELCO II logo" class="nav-logo-img">
+        </span>
+        <span class="nav-logo-text">
+          <span class="nav-logo-title">SAMELCO II</span>
+          <span class="nav-logo-sub">SAMAR II ELECTRIC COOPERATIVE, INC.</span>
+        </span>
+      </a>
+      <div class="nav-right">
+        <a href="user-dashboard.html" class="nav-btn">Dashboard</a>
+        <button type="button" class="nav-btn" id="user-profile-logout">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="user-dashboard-main" style="min-height: calc(100vh - 80px); display: flex; align-items: center; padding: 1rem;">
+    <section class="profile-panel" style="position: relative;">
+      <div id="profile-loading" class="loading-overlay">
+        <div class="spinner"></div>
+      </div>
+
+      <div class="profile-layout">
+        <!-- Sidebar -->
+        <div class="profile-sidebar">
+          <div class="profile-header">
+            <div id="profile-avatar" class="profile-avatar">U</div>
+            <h1>My Profile</h1>
+            <p>Manage your account details and settings</p>
+          </div>
+        </div>
+
+        <!-- Form Area -->
+        <div class="profile-form-area">
+          <div id="profile-toast" class="toast-message"></div>
+
+          <form id="profile-form" class="profile-form">
+            <div class="profile-section-title">Personal Information</div>
+            <div class="profile-section-desc">Update your contact details and account information.</div>
+            
+            <div class="profile-grid">
+              <div class="input-wrap">
+                <input type="text" id="profile-name" placeholder=" " required>
+                <label for="profile-name">Full Name</label>
+              </div>
+              
+              <div class="input-wrap">
+                <input type="email" id="profile-email" placeholder=" " disabled>
+                <label for="profile-email">Email Address (Cannot change)</label>
+              </div>
+            </div>
+
+            <div class="profile-grid">
+              <div class="input-wrap">
+                <input type="text" id="profile-contact" placeholder=" " required>
+                <label for="profile-contact">Contact Number</label>
+              </div>
+
+              <div class="input-wrap">
+                <input type="text" id="profile-account" placeholder=" " required>
+                <label for="profile-account">Account Number</label>
+              </div>
+            </div>
+
+            <div class="profile-grid">
+              <div class="input-wrap">
+                <select id="profile-municipality" required>
+                  <option value="" selected disabled hidden></option>
+                </select>
+                <label for="profile-municipality">Municipality</label>
+              </div>
+
+              <div class="input-wrap">
+                <select id="profile-barangay" required disabled>
+                  <option value="" selected disabled hidden></option>
+                </select>
+                <label for="profile-barangay">Barangay</label>
+              </div>
+            </div>
+
+            <hr class="divider">
+            
+            <div class="profile-section-title">Security</div>
+            <div class="profile-section-desc">Leave blank if you don't want to change your password.</div>
+
+            <div class="profile-grid">
+              <div class="input-wrap">
+                <input type="password" id="profile-password" placeholder=" " autocomplete="new-password">
+                <label for="profile-password">New Password</label>
+              </div>
+
+              <div class="input-wrap">
+                <input type="password" id="profile-confirm-password" placeholder=" " autocomplete="new-password">
+                <label for="profile-confirm-password">Confirm Password</label>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="profile-submit-btn">Save Changes</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/municipalities-data.js"></script>
+  <script src="../js/user-profile.js"></script>
+</body>
+</html>

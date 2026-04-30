@@ -1052,12 +1052,12 @@ body.page-about .nav {
 }
 
 .marker-pin.marker-pin-new {
-  --marker-glow: rgba(220, 38, 38, 0.3);
-  background: linear-gradient(135deg, #fa1111 0%, #fc1f1f 100%) !important;
+  --marker-glow: rgba(250, 35, 35, 0.692);
+  background: linear-gradient(135deg, #ff0000 0%, #f70303 100%) !important;
 }
 .marker-pin.marker-pin-pending {
-  --marker-glow: rgba(249, 115, 22, 0.3);
-  background: linear-gradient(135deg, #ff8c3a 0%, #fb923c 100%) !important;
+  --marker-glow: rgba(249, 116, 22, 0.74);
+  background: linear-gradient(135deg, #ff6c03 0%, #fd7200 100%) !important;
 }
 .marker-pin.marker-pin-restored {
   --marker-glow: rgba(5, 150, 105, 0.28);
@@ -1100,6 +1100,150 @@ body.page-about .nav {
   .marker-pin-blink {
     animation: none;
   }
+}
+
+/* --------------------------------------------------------
+   MAP SEARCH BAR
+   -------------------------------------------------------- */
+.map-search-container {
+  position: absolute;
+  top: 15px;
+  left: 60px;
+  z-index: 1000;
+  width: calc(100% - 80px);
+  max-width: 350px;
+  pointer-events: auto;
+}
+
+.map-search-box {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-radius: 30px;
+  padding: 8px 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.map-search-box:focus-within {
+  background: #ffffff;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 208, 0, 0.5);
+  transform: translateY(-2px);
+}
+
+.map-search-icon {
+  width: 20px;
+  height: 20px;
+  color: #666;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.map-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  color: #333;
+  outline: none;
+  padding: 4px 0;
+}
+
+.map-search-input::placeholder {
+  color: #999;
+}
+
+.map-search-clear {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 4px;
+  margin-left: 8px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-search-clear:hover {
+  color: #ef4444;
+}
+
+.map-search-results {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1001;
+  border: 1px solid rgba(0,0,0,0.08);
+  animation: slideDown 0.2s ease forwards;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.map-search-result-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.map-search-result-item:last-child {
+  border-bottom: none;
+}
+
+.map-search-result-item:hover,
+.map-search-result-item.is-active {
+  background: #f8fafc;
+}
+
+.map-search-result-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #1a1512;
+  margin-bottom: 2px;
+}
+
+.map-search-result-sub {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.map-search-result-type {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #e2e8f0;
+  color: #475569;
+  margin-left: auto;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.map-search-result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .map-popup {
