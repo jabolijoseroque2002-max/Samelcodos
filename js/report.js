@@ -432,6 +432,26 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   if (form) {
+    // Add image preview logic
+    var imageInput = document.getElementById('report-image');
+    var imagePreview = document.getElementById('report-image-preview');
+    if (imageInput && imagePreview) {
+      imageInput.addEventListener('change', function(e) {
+        var file = e.target.files[0];
+        if (file) {
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            imagePreview.src = e.target.result;
+            imagePreview.style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        } else {
+          imagePreview.src = '';
+          imagePreview.style.display = 'none';
+        }
+      });
+    }
+
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
       var lastTs = Number(localStorage.getItem('lastReportSubmitTs') || '0');
@@ -485,6 +505,64 @@ document.addEventListener('DOMContentLoaded', function () {
       var descEl = document.getElementById('report-description');
       var description = descEl ? String(descEl.value || '').trim() : '';
       var urgentEl = document.getElementById('report-urgent');
+      
+      // Image Handling
+      var imageEl = document.getElementById('report-image');
+      var imageBase64 = '';
+      if (imageEl && imageEl.files && imageEl.files.length > 0) {
+        try {
+          submitBtn = form.querySelector('button[type="submit"]');
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing Image...';
+          }
+          imageBase64 = await new Promise(function(resolve, reject) {
+            var file = imageEl.files[0];
+            var reader = new FileReader();
+            reader.onload = function(e) {
+              var img = new Image();
+              img.onload = function() {
+                var canvas = document.createElement('canvas');
+                var MAX_WIDTH = 800;
+                var MAX_HEIGHT = 800;
+                var width = img.width;
+                var height = img.height;
+                if (width > height) {
+                  if (width > MAX_WIDTH) {
+                    height *= MAX_WIDTH / width;
+                    width = MAX_WIDTH;
+                  }
+                } else {
+                  if (height > MAX_HEIGHT) {
+                    width *= MAX_HEIGHT / height;
+                    height = MAX_HEIGHT;
+                  }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                var ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL('image/jpeg', 0.6));
+              };
+              img.onerror = reject;
+              img.src = e.target.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+          if (submitBtn) {
+            submitBtn.textContent = 'Submitting...';
+          }
+        } catch (e) {
+          console.error("Error processing image:", e);
+          alert("Failed to process image. Submitting without it.");
+        }
+      }
+      
+      if (imageBase64) {
+        description += "\n\n[IMAGE_DATA]" + imageBase64;
+      }
+
       var row = {
         full_name: document.getElementById('report-name').value.trim(),
         contact: document.getElementById('report-contact').value.trim(),
@@ -565,6 +643,12 @@ document.addEventListener('DOMContentLoaded', function () {
         form.reset();
         latEl.value = '';
         lngEl.value = '';
+        if (imageEl) imageEl.value = '';
+        var preview = document.getElementById('report-image-preview');
+        if (preview) {
+          preview.src = '';
+          preview.style.display = 'none';
+        }
         if (barangayEl) {
           fillSelectOptions(barangayEl, [], 'Select barangay');
           barangayEl.disabled = true;
@@ -575,9 +659,19 @@ document.addEventListener('DOMContentLoaded', function () {
           nameEl.value = storedName;
         }
         setGpsStatus('GPS not captured yet', false);
+        var submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit Report';
+        }
       } catch (err) {
         console.error(err);
         alert(buildSubmitErrorMessage(err));
+        var submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit Report';
+        }
       }
     });
   }

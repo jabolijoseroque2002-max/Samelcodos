@@ -2479,21 +2479,50 @@ document.addEventListener('DOMContentLoaded', function () {
       var time = formatTimeAgo(r.createdAt);
       var div = document.createElement('div');
       div.className = 'notif-item';
+      
+      var descText = String(r.description || '');
+      var hasImage = descText.indexOf('[IMAGE_DATA]') !== -1;
+      var imageThumbnail = '';
+      if (hasImage) {
+        var parts = descText.split('[IMAGE_DATA]');
+        var base64Data = parts[1] ? parts[1].trim() : '';
+        if (base64Data) {
+          imageThumbnail = '<div class="notif-image-thumb"><img src="' + base64Data + '" alt="Report"></div>';
+        }
+      }
+
       var leftCol = document.createElement('div');
       leftCol.className = 'notif-left';
+      
+      if (hasImage) {
+        leftCol.innerHTML = imageThumbnail;
+      }
+
+      var contentCol = document.createElement('div');
+      contentCol.className = 'notif-content'; // We'll need to add some CSS for this layout
+
       var title = document.createElement('div');
       title.className = 'notif-item-title';
       var titleText = document.createTextNode(r.name + ' · ' + brgy);
       title.appendChild(titleText);
+      
       var issuePill = document.createElement('span');
       issuePill.className = 'notif-issue-pill';
       issuePill.textContent = r.issue;
+      if (hasImage) {
+        issuePill.innerHTML += ' <small>📷 Photo</small>';
+      }
+
       var sub = document.createElement('div');
       sub.className = 'notif-item-sub';
       sub.textContent = 'Reporter: ' + r.fullName;
-      leftCol.appendChild(title);
-      leftCol.appendChild(issuePill);
-      leftCol.appendChild(sub);
+      
+      contentCol.appendChild(title);
+      contentCol.appendChild(issuePill);
+      contentCol.appendChild(sub);
+      
+      leftCol.appendChild(contentCol);
+
       var rightCol = document.createElement('div');
       rightCol.className = 'notif-right';
       var timeEl = document.createElement('div');
@@ -2694,16 +2723,30 @@ document.addEventListener('DOMContentLoaded', function () {
         ? ('<button type="button" class="show-route-map map-popup-btn map-popup-btn-primary">Show Route on Map</button>' +
           (routeHref2 ? '<a href="' + routeHref2 + '" target="_blank" rel="noopener noreferrer" class="open-route map-popup-btn map-popup-btn-ghost">Open in Google Maps</a>' : ''))
         : '';
+        
+      var descText = String(r.description || '');
+      var imageHtml = '';
+      if (descText.indexOf('[IMAGE_DATA]') !== -1) {
+        var parts = descText.split('[IMAGE_DATA]');
+        descText = parts[0].trim();
+        var base64Data = parts[1].trim();
+        if (base64Data) {
+          imageHtml = '<div style="margin-top:8px;"><strong style="display:block; margin-bottom:4px; font-size:0.8rem; color:#444;">Attached Image:</strong><a href="' + base64Data + '" target="_blank"><img src="' + base64Data + '" style="width:100%; border-radius:6px; border:1px solid #ccc; max-height:120px; object-fit:cover; cursor:pointer;" alt="Report Image"></a></div>';
+        }
+      }
+
       marker.bindPopup(
         '<div class="map-popup">' +
           '<div class="map-popup-title">' + displayMunicipality + '</div>' +
           '<div class="map-popup-sub">' + (rb || r.barangay || '') + '</div>' +
           '<div class="map-popup-issue">' + r.issue + queueBadgeLine + '</div>' +
           '<div class="map-popup-status" style="color:' + statusColor + ';">Status: ' + statusText + '</div>' +
+          (descText ? '<div class="map-popup-meta"><strong>Details:</strong> ' + descText + '</div>' : '') +
           (slaBadge2 ? ('<div class="map-popup-note">' + slaBadge2 + '</div>') : '') +
           (locationLine ? '<div class="map-popup-meta">Location: ' + locationLine + '</div>' : '') +
           (coordsLine ? ('<div class="map-popup-meta">' + coordsLine.replace('<br><small>', '').replace('</small>', '') + '</div>') : '') +
           (assignedRow ? '<div class="map-popup-meta">Assigned: ' + assignedRow + '</div>' : '') +
+          imageHtml +
           teamSelRow + resolveToggleRow +
           '<div class="map-popup-actions">' + routeLink2 + '<button type="button" class="view-records map-popup-btn map-popup-btn-primary">View in Records</button>' + (canManage() ? '<button type="button" class="hide-pin map-popup-btn map-popup-btn-danger">Hide this pin</button>' : '') + '</div>' +
           '<div class="map-popup-meta">Reporter: ' + r.fullName + (r.contact ? ' (' + r.contact + ')' : '') + '</div>' +
@@ -3330,6 +3373,16 @@ document.addEventListener('DOMContentLoaded', function () {
            
            var isNewMark = renderObj.type === 'new';
            var isPendingMark = renderObj.type === 'pending';
+           
+           var descTextForImg = renderObj.item.row ? String(renderObj.item.row.description || '') : '';
+           var hasImage = descTextForImg.indexOf('[IMAGE_DATA]') !== -1;
+           if (hasImage) {
+             var cam = document.createElement('span');
+             cam.className = 'camera-icon';
+             cam.innerHTML = '📷';
+             cam.title = 'Has attached photo';
+             bItem.appendChild(cam);
+           }
            
            bItem.classList.toggle('barangay-new', isNewMark);
            bItem.classList.toggle('barangay-pending', isPendingMark);

@@ -548,6 +548,7 @@ document.addEventListener('DOMContentLoaded', function () {
           name: name,
           address: address,
           issue: statusText,
+          description: r.description || '',
           municipality: municipality,
           barangay: barangay,
           assignedTeam: assignedTeam,
@@ -1093,6 +1094,17 @@ document.addEventListener('DOMContentLoaded', function () {
   function openRecordModal(info) {
     if (!recModal || !recList) return;
     recList.innerHTML = '';
+    var descText = info.description || '';
+    var imageHtml = '';
+    if (descText.indexOf('[IMAGE_DATA]') !== -1) {
+      var parts = descText.split('[IMAGE_DATA]');
+      descText = parts[0].trim();
+      var base64Data = parts[1].trim();
+      if (base64Data) {
+        imageHtml = '<br><strong style="display:block; margin-top:8px;">Attached Image:</strong><a href="' + base64Data + '" target="_blank"><img src="' + base64Data + '" style="max-width:100%; border-radius:6px; border:1px solid #ccc; max-height:200px; margin-top:5px; object-fit:cover; cursor:pointer;" alt="Report Image"></a>';
+      }
+    }
+
     var data = [
       ['Queue No.', info.queueNumber ? ('#' + info.queueNumber) : 'Not assigned'],
       ['Date', info.date || ''],
@@ -1101,13 +1113,15 @@ document.addEventListener('DOMContentLoaded', function () {
       ['Municipality', info.municipality || ''],
       ['Address', info.address || ''],
       ['Issue', info.issue || ''],
+      ['Details', descText + imageHtml],
       ['Assigned Team', info.assignedTeam || 'None'],
       ['Assigned Personnel', info.assignedPersonnel || 'None'],
       ['New', info.isNew ? 'Yes' : 'No']
     ];
     data.forEach(function(kv){
+      if (kv[0] === 'Details' && !kv[1]) return; // hide details if empty
       var li = document.createElement('li');
-      li.textContent = kv[0] + ': ' + kv[1];
+      li.innerHTML = '<strong>' + kv[0] + ':</strong> ' + kv[1];
       recList.appendChild(li);
     });
     lastAddress = info.address || '';

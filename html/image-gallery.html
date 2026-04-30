@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report Images - SAMELCO II</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    body { background: #f8fafc; }
+    .gallery-header { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 20px 0; margin-bottom: 30px; }
+    .gallery-header-inner { max-width: 100%; padding: 0 40px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; }
+    .gallery-title { font-family: var(--font-display); font-size: 2.25rem; color: #0f172a; margin: 0; }
+    .gallery-subtitle { color: #475569; font-size: 1.1rem; margin-top: 6px; }
+    .gallery-stats { display: flex; gap: 32px; background: #fff; padding: 12px 24px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+    .gallery-stat { text-align: center; }
+    .gallery-stat-num { font-size: 1.5rem; font-weight: 700; color: #0f172a; }
+    .gallery-stat-label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+    .gallery-container { max-width: 100%; padding: 0 40px 40px; }
+    .gallery-filters { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 32px; align-items: center; background: #fff; padding: 16px 24px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+    .gallery-filter-group { display: flex; align-items: center; gap: 8px; border-right: 1px solid #e2e8f0; padding-right: 16px; margin-right: 4px; }
+    .gallery-filter-group:last-child { border-right: none; padding-right: 0; margin-right: 0; }
+    .gallery-filter-label { font-size: 0.75rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+    .gallery-filter-btn { padding: 8px 16px; border-radius: 8px; border: 1px solid #e2e8f0; background: #fff; color: #475569; font-size: 0.875rem; cursor: pointer; transition: all 0.2s; font-weight: 500; }
+    .gallery-filter-btn:hover { border-color: #cbd5e1; background: #f8fafc; }
+    .gallery-filter-btn.active { background: #0f172a; color: #fff; border-color: #0f172a; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15); }
+    .gallery-filter-select { padding: 8px 12px; border-radius: 8px; border: 1px solid #e2e8f0; background: #fff; color: #1e293b; font-size: 0.875rem; font-weight: 500; cursor: pointer; outline: none; }
+    .gallery-filter-select:focus { border-color: #0f172a; }
+    .gallery-search-wrap { position: relative; flex: 1; min-width: 250px; }
+    .gallery-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.9rem; }
+    .gallery-search { padding: 8px 12px 8px 36px; border-radius: 8px; border: 1px solid #e2e8f0; background: #f8fafc; color: #1e293b; font-size: 0.875rem; width: 100%; transition: all 0.2s; }
+    .gallery-search:focus { background: #fff; border-color: #0f172a; box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.05); }
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 32px; }
+    .gallery-card { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; border: 1px solid #f1f5f9; position: relative; }
+    .gallery-card:hover { box-shadow: 0 20px 40px rgba(0,0,0,0.08); transform: translateY(-6px); border-color: #e2e8f0; }
+    .gallery-card-image-wrap { position: relative; overflow: hidden; height: 240px; }
+    .gallery-card-image { width: 100%; height: 100%; object-fit: cover; background: #f1f5f9; display: block; transition: transform 0.5s ease; }
+    .gallery-card:hover .gallery-card-image { transform: scale(1.05); }
+    .gallery-card-badge { position: absolute; top: 12px; right: 12px; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; z-index: 2; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    .gallery-card-badge.urgent { background: #ef4444; color: #fff; }
+    .gallery-card-badge.normal { background: #f59e0b; color: #fff; }
+    .gallery-card-badge.resolved { background: #10b981; color: #fff; }
+    .gallery-card-body { padding: 20px; }
+    .gallery-card-issue { font-family: var(--font-display); font-weight: 600; color: #0f172a; font-size: 1.05rem; margin-bottom: 12px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.8em; }
+    .gallery-card-meta { display: grid; grid-template-columns: 1.2fr 1fr; gap: 12px; font-size: 0.85rem; color: #64748b; margin-bottom: 16px; }
+    .gallery-card-meta-item { display: flex; align-items: center; gap: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gallery-card-meta-icon { color: #94a3b8; font-size: 0.9rem; flex-shrink: 0; }
+    .gallery-card-footer { padding: 14px 20px; background: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+    .gallery-card-reporter { display: flex; align-items: center; gap: 8px; }
+    .gallery-card-avatar { width: 24px; height: 24px; border-radius: 50%; background: #0f172a; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600; }
+    .gallery-card-reporter-name { font-size: 0.85rem; color: #334155; font-weight: 600; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .gallery-card-time { font-size: 0.8rem; color: #94a3b8; font-weight: 500; }
+    .gallery-card-delete-btn { position: absolute; top: 12px; left: 12px; width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 255, 255, 0.9); border: 1px solid #fee2e2; color: #ef4444; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; z-index: 3; opacity: 0; }
+    .gallery-card:hover .gallery-card-delete-btn { opacity: 1; }
+    .gallery-card-delete-btn:hover { background: #ef4444; color: #fff; border-color: #ef4444; transform: scale(1.1); }
+    .gallery-modal-btn-danger { background: #ef4444 !important; }
+    .gallery-modal-btn-danger:hover { background: #dc2626 !important; }
+    .gallery-empty { text-align: center; padding: 80px 20px; color: #94a3b8; }
+    .gallery-empty-icon { font-size: 4rem; margin-bottom: 16px; opacity: 0.5; }
+    .gallery-empty-title { font-size: 1.25rem; font-weight: 600; color: #64748b; margin-bottom: 8px; }
+    .gallery-loading { text-align: center; padding: 60px 20px; color: #64748b; }
+    .gallery-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+    .gallery-modal.hidden { display: none; }
+    .gallery-modal-content { max-width: 900px; width: 100%; background: #fff; border-radius: 12px; overflow: hidden; max-height: 90vh; display: flex; flex-direction: column; }
+    .gallery-modal-image-wrap { background: #000; display: flex; align-items: center; justify-content: center; min-height: 300px; max-height: 60vh; }
+    .gallery-modal-image { max-width: 100%; max-height: 60vh; object-fit: contain; }
+    .gallery-modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+    .gallery-modal-title { font-size: 1.2rem; font-weight: 700; color: #0f172a; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+    .gallery-modal-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .gallery-modal-field { }
+    .gallery-modal-field label { display: block; font-size: 0.7rem; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.05em; margin-bottom: 2px; }
+    .gallery-modal-field span { font-size: 0.9rem; color: #1e293b; font-weight: 500; }
+    .gallery-modal-desc { margin-top: 16px; }
+    .gallery-modal-desc label { display: block; font-size: 0.7rem; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .gallery-modal-desc span { font-size: 0.9rem; color: #334155; }
+    .gallery-modal-actions { padding: 16px 20px; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; justify-content: flex-end; }
+    .gallery-modal-close { padding: 10px 20px; border-radius: 8px; border: none; background: #f1f5f9; color: #475569; font-size: 0.875rem; cursor: pointer; font-weight: 500; }
+    .gallery-modal-close:hover { background: #e2e8f0; }
+    .gallery-modal-btn { padding: 10px 20px; border-radius: 8px; border: none; background: #0f172a; color: #fff; font-size: 0.875rem; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+    .gallery-modal-btn:hover { background: #1e293b; }
+    @media (max-width: 768px) {
+      .gallery-grid { grid-template-columns: 1fr; }
+      .gallery-modal-grid { grid-template-columns: 1fr; }
+      .gallery-stats { gap: 16px; }
+    }
+    /* Navigation adjustments to match dashboard exactly */
+    .nav-inner { max-width: 100% !important; padding: 0.6rem 2.5rem !important; }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="dashboard.html" class="nav-logo">
+        <span class="nav-logo-icon" aria-hidden="true">
+          <img src="../assets/images/logo.png" alt="SAMELCO II logo" class="nav-logo-img">
+        </span>
+        <span class="nav-logo-text">
+          <span class="nav-logo-title">SAMELCO II</span>
+          <span class="nav-logo-sub">SAMAR II ELECTRIC COOPERATIVE, INC.</span>
+        </span>
+      </a>
+      <div class="nav-right">
+        <div class="nav-links">
+          <a href="dashboard.html" class="nav-link">Home</a>
+          <a href="records.html" class="nav-link">Records</a>
+          <a href="analytics.html" class="nav-link">Analytics</a>
+          <a href="image-gallery.html" class="nav-link" aria-current="page">Images</a>
+          <a href="teams.html" class="nav-link">Teams</a>
+          <a href="contact.html" class="nav-link">Contact</a>
+          <a href="about.html" class="nav-link">About</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="gallery-header" style="margin-top: 80px;">
+    <div class="gallery-header-inner">
+      <div>
+        <h1 class="gallery-title">Report Image Gallery</h1>
+        <p class="gallery-subtitle">View all photos submitted by consumers with their outage reports</p>
+      </div>
+      <div class="gallery-stats">
+        <div class="gallery-stat">
+          <div class="gallery-stat-num" id="total-images">0</div>
+          <div class="gallery-stat-label">Total Photos</div>
+        </div>
+        <div class="gallery-stat">
+          <div class="gallery-stat-num" id="total-reports">0</div>
+          <div class="gallery-stat-label">Reports with Photos</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gallery-container">
+    <div class="gallery-filters">
+      <div class="gallery-filter-group">
+        <span class="gallery-filter-label">Priority:</span>
+        <button class="gallery-filter-btn active" data-filter="all">All</button>
+        <button class="gallery-filter-btn" data-filter="urgent">Urgent</button>
+        <button class="gallery-filter-btn" data-filter="normal">Normal</button>
+      </div>
+      
+      <div class="gallery-filter-group">
+        <span class="gallery-filter-label">Location:</span>
+        <select class="gallery-filter-select" id="municipality-filter">
+          <option value="">All Municipalities</option>
+        </select>
+      </div>
+
+      <div class="gallery-filter-group">
+        <span class="gallery-filter-label">Sort:</span>
+        <select class="gallery-filter-select" id="sort-filter">
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+        </select>
+      </div>
+
+      <div class="gallery-search-wrap">
+        <span class="gallery-search-icon">🔍</span>
+        <input type="text" class="gallery-search" id="gallery-search" placeholder="Search by name, issue, or location...">
+      </div>
+    </div>
+
+    <div class="gallery-grid" id="gallery-grid">
+      <div class="gallery-loading">Loading gallery...</div>
+    </div>
+  </div>
+
+  <div class="gallery-modal hidden" id="gallery-modal">
+    <div class="gallery-modal-content">
+      <div class="gallery-modal-image-wrap">
+        <img class="gallery-modal-image" id="modal-image" src="" alt="Report Image">
+      </div>
+      <div class="gallery-modal-body">
+        <div class="gallery-modal-title">
+          <span id="modal-issue"></span>
+          <span class="issue-dot" id="modal-dot"></span>
+        </div>
+        <div class="gallery-modal-grid">
+          <div class="gallery-modal-field">
+            <label>Queue No.</label>
+            <span id="modal-queue">-</span>
+          </div>
+          <div class="gallery-modal-field">
+            <label>Date/Time</label>
+            <span id="modal-datetime">-</span>
+          </div>
+          <div class="gallery-modal-field">
+            <label>Reporter</label>
+            <span id="modal-reporter">-</span>
+          </div>
+          <div class="gallery-modal-field">
+            <label>Contact</label>
+            <span id="modal-contact">-</span>
+          </div>
+          <div class="gallery-modal-field">
+            <label>Municipality</label>
+            <span id="modal-municipality">-</span>
+          </div>
+          <div class="gallery-modal-field">
+            <label>Barangay</label>
+            <span id="modal-barangay">-</span>
+          </div>
+        </div>
+        <div class="gallery-modal-desc" id="modal-desc-wrap">
+          <label>Details</label>
+          <span id="modal-desc">-</span>
+        </div>
+      </div>
+      <div class="gallery-modal-actions">
+        <button class="gallery-modal-close" onclick="closeModal()">Close</button>
+        <button class="gallery-modal-btn gallery-modal-btn-danger" id="modal-delete-btn">
+          Delete Report
+        </button>
+        <a class="gallery-modal-btn" id="modal-view-records" href="#">
+          View in Records
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/supabase-config.js"></script>
+  <script>
+    var cfg = window.SAMELCO_SUPABASE || {};
+    var allImageReports = [];
+    var currentFilter = 'all';
+    var currentMunicipality = '';
+    var currentSort = 'newest';
+
+    async function fetchReportsWithImages() {
+      if (!cfg.url || !cfg.anonKey || !cfg.reportsTable) {
+        document.getElementById('gallery-grid').innerHTML = '<div class="gallery-empty"><div class="gallery-empty-icon">⚙️</div><div class="gallery-empty-title">Configuration Missing</div><p>Supabase is not configured.</p></div>';
+        return;
+      }
+      try {
+        var selectCols = [
+          'id', 'full_name', 'contact', 'location_text', 'issue_type', 'description',
+          'latitude', 'longitude', 'municipality', 'barangay', 'status', 'created_at',
+          'is_urgent', 'queue_number', 'assigned_team'
+        ].join(',');
+        var url = cfg.url + '/rest/v1/' + cfg.reportsTable + '?select=' + encodeURIComponent(selectCols) + '&order=created_at.desc&limit=1000';
+        var res = await fetch(url, {
+          headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        var rows = await res.json();
+        if (!Array.isArray(rows)) rows = [];
+        allImageReports = rows.filter(function(r) {
+          return r.description && String(r.description).indexOf('[IMAGE_DATA]') !== -1;
+        });
+        populateMunicipalityFilter();
+        renderGallery();
+        updateStats();
+      } catch (err) {
+        console.error(err);
+        document.getElementById('gallery-grid').innerHTML = '<div class="gallery-empty"><div class="gallery-empty-icon">⚠️</div><div class="gallery-empty-title">Failed to Load</div><p>' + err.message + '</p></div>';
+      }
+    }
+
+    function populateMunicipalityFilter() {
+      var muniSet = new Set();
+      allImageReports.forEach(function(r) {
+        if (r.municipality) muniSet.add(r.municipality);
+      });
+      var select = document.getElementById('municipality-filter');
+      var sorted = Array.from(muniSet).sort();
+      sorted.forEach(function(m) {
+        var opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = m;
+        select.appendChild(opt);
+      });
+    }
+
+    function updateStats() {
+      document.getElementById('total-images').textContent = String(allImageReports.length);
+      document.getElementById('total-reports').textContent = String(allImageReports.length);
+    }
+
+    function getImageFromDescription(desc) {
+      if (!desc || desc.indexOf('[IMAGE_DATA]') === -1) return null;
+      var parts = desc.split('[IMAGE_DATA]');
+      return parts[1] ? parts[1].trim() : null;
+    }
+
+    function getCleanDescription(desc) {
+      if (!desc) return '';
+      if (desc.indexOf('[IMAGE_DATA]') !== -1) {
+        return desc.split('[IMAGE_DATA]')[0].trim();
+      }
+      return desc.trim();
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '-';
+      var d = new Date(dateStr);
+      return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function renderGallery() {
+      var grid = document.getElementById('gallery-grid');
+      var search = document.getElementById('gallery-search').value.toLowerCase().trim();
+      
+      var filtered = allImageReports.filter(function(r) {
+        if (currentFilter === 'urgent' && !r.is_urgent) return false;
+        if (currentFilter === 'normal' && r.is_urgent) return false;
+        if (currentMunicipality && r.municipality !== currentMunicipality) return false;
+        if (search) {
+          var searchable = [
+            r.full_name || '', r.municipality || '', r.barangay || '',
+            r.issue_type || '', r.location_text || '', r.contact || ''
+          ].join(' ').toLowerCase();
+          if (searchable.indexOf(search) === -1) return false;
+        }
+        return true;
+      });
+
+      // Apply sorting
+      filtered.sort(function(a, b) {
+        var da = new Date(a.created_at).getTime();
+        var db = new Date(b.created_at).getTime();
+        return currentSort === 'newest' ? (db - da) : (da - db);
+      });
+
+      if (!filtered.length) {
+        grid.innerHTML = '<div class="gallery-empty"><div class="gallery-empty-icon">📷</div><div class="gallery-empty-title">No Images Found</div><p>No reports with photos match your current filters.</p></div>';
+        return;
+      }
+
+      grid.innerHTML = '';
+      filtered.forEach(function(r) {
+        var imgData = getImageFromDescription(r.description);
+        if (!imgData) return;
+        
+        var name = r.full_name || 'Anonymous';
+        var initial = name.charAt(0).toUpperCase();
+        
+        var isResolved = r.status === 'resolved' || r.status === 'restored';
+        var badgeClass = isResolved ? 'resolved' : (r.is_urgent ? 'urgent' : 'normal');
+        var badgeText = isResolved ? 'Resolved' : (r.is_urgent ? 'Urgent' : 'Normal');
+
+        var card = document.createElement('div');
+        card.className = 'gallery-card';
+        card.onclick = function() { openModal(r); };
+        card.innerHTML =
+          '<div class="gallery-card-delete-btn" title="Delete Report" onclick="event.stopPropagation(); deleteReport(' + r.id + ')">' +
+            '🗑️' +
+          '</div>' +
+          '<div class="gallery-card-badge ' + badgeClass + '">' + 
+            badgeText + 
+          '</div>' +
+          '<div class="gallery-card-image-wrap">' +
+            '<img class="gallery-card-image" src="' + imgData + '" alt="Report Image" onerror="this.src=\'../assets/images/placeholder.png\'">' +
+          '</div>' +
+          '<div class="gallery-card-body">' +
+            '<div class="gallery-card-issue">' + (r.issue_type || 'Unspecified Issue') + '</div>' +
+            '<div class="gallery-card-meta">' +
+              '<div class="gallery-card-meta-item">📍 <span class="gallery-card-meta-icon"></span>' + (r.municipality || '-') + '</div>' +
+              '<div class="gallery-card-meta-item">🏠 <span class="gallery-card-meta-icon"></span>' + (r.barangay || '-') + '</div>' +
+              '<div class="gallery-card-meta-item">#️⃣ <span class="gallery-card-meta-icon"></span>' + (r.queue_number || r.id) + '</div>' +
+              '<div class="gallery-card-meta-item">📅 <span class="gallery-card-meta-icon"></span>' + formatDate(r.created_at).split(',')[0] + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="gallery-card-footer">' +
+            '<div class="gallery-card-reporter">' +
+              '<div class="gallery-card-avatar">' + initial + '</div>' +
+              '<span class="gallery-card-reporter-name">' + name + '</span>' +
+            '</div>' +
+            '<span class="gallery-card-time">' + formatDate(r.created_at).split(',')[1] + '</span>' +
+          '</div>';
+        grid.appendChild(card);
+      });
+    }
+
+    function openModal(r) {
+      var imgData = getImageFromDescription(r.description);
+      if (!imgData) return;
+      document.getElementById('modal-image').src = imgData;
+      document.getElementById('modal-issue').textContent = r.issue_type || 'Unknown Issue';
+      
+      var isResolved = r.status === 'resolved' || r.status === 'restored';
+      var badgeClass = isResolved ? 'resolved' : (r.is_urgent ? 'urgent' : 'normal');
+      var badgeText = isResolved ? 'Resolved' : (r.is_urgent ? 'Urgent' : 'Normal');
+      
+      var dot = document.getElementById('modal-dot');
+      dot.className = 'issue-dot ' + badgeClass;
+      document.getElementById('modal-issue').innerHTML = (r.issue_type || 'Unknown Issue') + ' <span style="font-size:0.8rem; padding:2px 8px; border-radius:10px; margin-left:10px; background:' + (isResolved ? '#10b981' : (r.is_urgent ? '#ef4444' : '#f59e0b')) + '; color:#fff;">' + badgeText + '</span>';
+
+      document.getElementById('modal-queue').textContent = r.queue_number ? ('#' + r.queue_number) : ('#' + r.id);
+      document.getElementById('modal-datetime').textContent = formatDate(r.created_at);
+      document.getElementById('modal-reporter').textContent = r.full_name || 'Anonymous';
+      document.getElementById('modal-contact').textContent = r.contact || 'N/A';
+      document.getElementById('modal-municipality').textContent = r.municipality || '-';
+      document.getElementById('modal-barangay').textContent = r.barangay || '-';
+      var cleanDesc = getCleanDescription(r.description);
+      var descSpan = document.getElementById('modal-desc');
+      var descWrap = document.getElementById('modal-desc-wrap');
+      if (cleanDesc) {
+        descSpan.textContent = cleanDesc;
+        descWrap.style.display = 'block';
+      } else {
+        descWrap.style.display = 'none';
+      }
+      var recLink = document.getElementById('modal-view-records');
+      if (r.municipality) {
+        recLink.href = 'records.html?location=' + encodeURIComponent(r.municipality + ' ' + (r.barangay || ''));
+      } else {
+        recLink.href = 'records.html';
+      }
+      
+      var deleteBtn = document.getElementById('modal-delete-btn');
+      deleteBtn.onclick = function() {
+        deleteReport(r.id);
+      };
+
+      document.getElementById('gallery-modal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    async function deleteReport(id) {
+      if (!id) return;
+      if (!confirm('Sigurado ka ba na gusto mong i-delete ang report na ito? Hindi na ito mababawi.')) {
+        return;
+      }
+
+      try {
+        var url = cfg.url + '/rest/v1/' + cfg.reportsTable + '?id=eq.' + id;
+        var res = await fetch(url, {
+          method: 'DELETE',
+          headers: { 
+            apikey: cfg.anonKey, 
+            Authorization: 'Bearer ' + cfg.anonKey,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+          }
+        });
+
+        if (!res.ok) throw new Error('Failed to delete report');
+        
+        // Success
+        alert('Report successfully deleted!');
+        closeModal();
+        // Refresh local data and UI
+        allImageReports = allImageReports.filter(function(r) { return r.id !== id; });
+        renderGallery();
+        updateStats();
+      } catch (err) {
+        console.error(err);
+        alert('Error deleting report: ' + err.message);
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('gallery-modal').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    document.getElementById('gallery-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+
+    document.querySelectorAll('.gallery-filter-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.gallery-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+        this.classList.add('active');
+        currentFilter = this.getAttribute('data-filter');
+        renderGallery();
+      });
+    });
+
+    document.getElementById('municipality-filter').addEventListener('change', function() {
+      currentMunicipality = this.value;
+      renderGallery();
+    });
+
+    document.getElementById('sort-filter').addEventListener('change', function() {
+      currentSort = this.value;
+      renderGallery();
+    });
+
+    document.getElementById('gallery-search').addEventListener('input', function() {
+      renderGallery();
+    });
+
+    fetchReportsWithImages();
+  </script>
+</body>
+</html>

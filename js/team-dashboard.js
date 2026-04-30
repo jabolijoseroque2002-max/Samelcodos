@@ -696,6 +696,19 @@ document.addEventListener('DOMContentLoaded', function () {
       if (status !== 'pending') actions.push(createStatusButton('Set Pending', 'pending', row));
       if (status !== 'ontheway') actions.push(createStatusButton('Mark On the Way', 'ontheway', row));
       if (status !== 'resolved') actions.push(createStatusButton('Mark Resolved', 'resolved', row));
+      
+      var descText = String(row.description || '');
+      var imageHtml = '';
+      if (descText.indexOf('[IMAGE_DATA]') !== -1) {
+        var parts = descText.split('[IMAGE_DATA]');
+        descText = parts[0].trim();
+        var base64Data = parts[1].trim();
+        if (base64Data) {
+          imageHtml = '<div style="margin-top:10px;"><strong style="display:block; margin-bottom:5px; font-size:0.85rem; color:var(--text-light);">Attached Image</strong><a href="' + base64Data + '" target="_blank"><img src="' + base64Data + '" style="max-width:100%; border-radius:8px; border:1px solid rgba(0,0,0,0.1); max-height:300px; object-fit:cover; cursor:pointer;" alt="Report Image"></a></div>';
+        }
+      }
+      
+      if (!descText) descText = 'No extra details were submitted for this report.';
 
       card.innerHTML =
         '<div class="team-mission-header">' +
@@ -726,7 +739,8 @@ document.addEventListener('DOMContentLoaded', function () {
             '<strong>' + escapeHtml(formatTimestamp(row.updated_at || row.created_at)) + '</strong>' +
           '</div>' +
         '</div>' +
-        '<p class="team-mission-description">' + escapeHtml(row.description || 'No extra details were submitted for this report.') + '</p>';
+        '<p class="team-mission-description">' + escapeHtml(descText) + '</p>' +
+        imageHtml;
 
       var assignWrap = document.createElement('div');
       assignWrap.className = 'team-mission-assignment';
